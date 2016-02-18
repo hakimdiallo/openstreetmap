@@ -1,4 +1,5 @@
 #include "osm.h"
+#include "string.h"
 
 int main(int argc, char *argv[]){
 	xmlDocPtr doc;
@@ -41,26 +42,24 @@ int main(int argc, char *argv[]){
 								if(xmlStrEqual(child->name,(const xmlChar *)"nd")){
 									xmlChar *ref = xmlGetProp(child,(const xmlChar *)"ref");
 									printf("nd: %s\n", ref);
-									/*xmlXPathContextPtr ctxt2 = xmlXPathNewContext(child->doc);
-									if (ctxt2 == NULL) {
-										return -1;
-									}
-									xmlXPathObjectPtr node = xmlXPathEvalExpression(BAD_CAST "/osm/node", ctxt2);
+									xmlChar *expr;
+									xmlChar *expression = "/osm/node[@id=";
+									expr = xmlStrncatNew(expression,ref,xmlStrlen(ref));
+
+									xmlChar *fin = "]";
+									xmlChar *ex = xmlStrncatNew(expr,fin,xmlStrlen(fin));
+									printf("1 %s\n",ex );
+									//break;
+									xmlXPathObjectPtr node = xmlXPathEvalExpression(BAD_CAST ex, ctxt);
 									if(node == NULL){
 										return -1;
 									}
-									if (node->type == XPATH_NODESET) {
-										int j;
-										for (j = 0; j < node->nodesetval->nodeNr; j++) {
-											xmlNodePtr noeud = node->nodesetval->nodeTab[j];
-											xmlChar *id = xmlGetProp(noeud,(const xmlChar *)"id");
-											if(xmlStrEqual(ref,id)){
-												xmlChar *visible = xmlGetProp(child,(const xmlChar *)"visible");
-												printf("%s\n", visible);
-												break;
-											}
-										}
-									}*/
+									xmlNodePtr noeud = node->nodesetval->nodeTab[0];
+									
+									xmlFree(expr);
+									xmlFree(expression);
+									xmlFree(ex);
+									xmlXPathFreeObject(node);
 								}
 								else {
 									xmlChar *k = xmlGetProp(child,(const xmlChar *)"k");
@@ -69,7 +68,6 @@ int main(int argc, char *argv[]){
 								}
 								child = child->next;
 							}
-	            //printf("id: %s\n", id);
 	        }
 	    }
 	}
