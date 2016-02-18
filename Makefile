@@ -9,15 +9,15 @@ OBJECTS = $(patsubst %.c, %.o, $(wildcard *.c))
 all: $(EXEC)
 
 $(EXEC): $(OBJECTS)
-	$(CC) -o $@ $^ $(LDFLAGS) $(CPPFLAGS) 
+	$(CC) -o $@ $^ $(LDFLAGS) $(CPPFLAGS)
 
 %.o: %.c $(HEADERS)
-	$(CC) $(CFLAGS) -c $< $(LDFLAGS) $(CPPFLAGS) 
+	$(CC) $(CFLAGS) -c $< $(LDFLAGS) $(CPPFLAGS)
 
 
 mrproper: clean
 	rm -f $(EXEC)
-	
+
 clean:
 	rm -f $(OBJECTS)
 	rm -f *~
