@@ -1,3 +1,5 @@
+#ifndef _OSM_H_
+	#define _OSM_H_
 #include <stdio.h>
 #include <stdlib.h>
 #include <libxml/tree.h>
@@ -52,3 +54,5 @@ xmlNodePtr get_root(xmlDocPtr doc); // retourne le noeud racine s'il existe ou n
 void free_file(xmlDocPtr doc); // Libere le fichier xml (Libère la mémoire)
 void parcours_prefixe(xmlNodePtr noeud, fct_parcours_t f); // Parcours en profondeur des noeuds du fichier xml
 void afficher(xmlNodePtr noeud);
+
+#endif
