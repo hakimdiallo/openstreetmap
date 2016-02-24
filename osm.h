@@ -1,3 +1,5 @@
+#ifndef _OSM_H_
+	#define _OSM_H_
 #include <stdio.h>
 #include <stdlib.h>
 #include <libxml/tree.h>
@@ -58,3 +60,5 @@ void xpath_parcours(xmlDocPtr doc); // parcours un document xml par xpath
 void getNode_by_id(xmlChar *ref, xmlXPathContextPtr ctxt, xmlNodePtr noeud);
 void getNodeInformations(xmlNodePtr noeud, node n);
 void getBoundInformations(xmlNodePtr noeud,bounds b); //
+
+#endif

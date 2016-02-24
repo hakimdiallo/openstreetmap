@@ -101,6 +101,7 @@ void parcours_des_noeuds_fils(xmlNodePtr n){
     if(xmlStrEqual(child->name,(const xmlChar *)"nd")){
       xmlChar *ref = xmlGetProp(child,(const xmlChar *)"ref");
       //printf("nd: %s\n", ref);
+      //commencer a construire un way
       xmlNodePtr noeud;
       getNode_by_id(ref,ctxt,noeud);
       node nd;
@@ -147,7 +148,7 @@ void getNodeInformations(xmlNodePtr noeud, node n){
   n.at.visible = (char *) xmlGetProp(noeud,(const xmlChar *)"visible");
   xmlNodePtr child = noeud->child;
   while( child != NULL ){
-    
+
   }
   xmlFree(lat);
   xmlFree(lon);

@@ -83,7 +83,19 @@ int main(int argc, char *argv[]){
 	}
 	parcours_prefixe(racine,afficher);
 	printf("Hey! look at u!...\n");*/
+	char title[50];
+	strcpy(title,"Carte");
 	SDL_Surface *ecran=NULL;
-	draw_fenetre(ecran,500,500);
+	draw_fenetre(&ecran,600,800,title);
+	disque(ecran,(ecran->w)/2,(ecran->h)/2,250,SDL_MapRGB(ecran->format, 0x00, 0x80, 0x00));
+	actualiser(ecran);
+	attendreTouche();
+	effacerEcran(ecran,SDL_MapRGB(ecran->format, 0x00, 0x80, 0x00));
+	actualiser(ecran);
+	int x=(ecran->w)/2,y=(ecran->h)/2;
+	attendreTouche();
+	barre(ecran,x-(x/2),y-(y/2),x,y,SDL_MapRGB(ecran->format, 0x00, 0x00, 0x00));
+	actualiser(ecran);
+	attendreTouche();
 	return 0;
 }
