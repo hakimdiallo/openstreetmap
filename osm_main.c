@@ -1,5 +1,6 @@
 #include "osm.h"
 #include "string.h"
+#include "graphic.h"
 
 int main(int argc, char *argv[]){
 	xmlDocPtr doc;
@@ -55,7 +56,7 @@ int main(int argc, char *argv[]){
 										return -1;
 									}
 									xmlNodePtr noeud = node->nodesetval->nodeTab[0];
-									
+
 									xmlFree(expr);
 									xmlFree(expression);
 									xmlFree(ex);
@@ -71,6 +72,7 @@ int main(int argc, char *argv[]){
 	        }
 	    }
 	}
+
 	// Libération de la mémoire
 	xmlXPathFreeObject(xpathRes);
 	xmlXPathFreeContext(ctxt);
@@ -81,5 +83,7 @@ int main(int argc, char *argv[]){
 	}
 	parcours_prefixe(racine,afficher);
 	printf("Hey! look at u!...\n");*/
+	SDL_Surface *ecran=NULL;
+	draw_fenetre(ecran,500,500);
 	return 0;
 }

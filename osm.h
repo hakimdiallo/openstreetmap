@@ -32,7 +32,7 @@ typedef struct node {
 
 typedef struct way {
 	attributs at;
-	int *refs;
+	node refs[];
 	tag t[];
 } way;
 
@@ -52,3 +52,9 @@ xmlNodePtr get_root(xmlDocPtr doc); // retourne le noeud racine s'il existe ou n
 void free_file(xmlDocPtr doc); // Libere le fichier xml (Libère la mémoire)
 void parcours_prefixe(xmlNodePtr noeud, fct_parcours_t f); // Parcours en profondeur des noeuds du fichier xml
 void afficher(xmlNodePtr noeud);
+void get_xpath_contexte(xmlDocPtr doc, xmlXPathContextPtr ctxt);
+void getNode_by_xpathExpression(xmlChar *nodePath, xmlXPathContextPtr ctxt, xmlXPathObjectPtr pathObj);
+void xpath_parcours(xmlDocPtr doc); // parcours un document xml par xpath
+void getNode_by_id(xmlChar *ref, xmlXPathContextPtr ctxt, xmlNodePtr noeud);
+void getNodeInformations(xmlNodePtr noeud, node n);
+void getBoundInformations(xmlNodePtr noeud,bounds b); //
