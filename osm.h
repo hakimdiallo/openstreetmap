@@ -5,6 +5,13 @@
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
+#include <string.h>
+#include <SDL.h>
+#include <math.h>
+
+#define WIDTH 500
+#define HEIGHT 600
+#define CIRC_TERRE 40075.00
 
 
 typedef void (*fct_parcours_t)(xmlNodePtr);//pointeur sur une fonction qui retourne un type int
@@ -26,15 +33,15 @@ typedef struct attributs {
 } attributs;
 
 typedef struct node {
-	int lon;
-	int lat;
-	attributs at;
-	tag t[];
+	double lon;
+	double lat;
+	//attributs at;
+	//tag t[];
 } node;
 
 typedef struct way {
 	attributs at;
-	node refs[];
+	//node refs[];
 	tag t[];
 } way;
 
@@ -43,22 +50,28 @@ typedef struct area {
 }area;
 
 typedef struct bounds{
-	int maxlat;
-	int minlat;
-	int maxlon;
-	int minlon;
+	double maxlat;
+	double minlat;
+	double maxlon;
+	double minlon;
 }bounds;
+
+extern bounds bn;
 
 xmlDocPtr parse_file(char *name); // Parse un document xml et retourne un pointeur sur le document xml
 xmlNodePtr get_root(xmlDocPtr doc); // retourne le noeud racine s'il existe ou null sinon
 void free_file(xmlDocPtr doc); // Libere le fichier xml (Libère la mémoire)
 void parcours_prefixe(xmlNodePtr noeud, fct_parcours_t f); // Parcours en profondeur des noeuds du fichier xml
 void afficher(xmlNodePtr noeud);
-void get_xpath_contexte(xmlDocPtr doc, xmlXPathContextPtr ctxt);
-void getNode_by_xpathExpression(xmlChar *nodePath, xmlXPathContextPtr ctxt, xmlXPathObjectPtr pathObj);
-void xpath_parcours(xmlDocPtr doc); // parcours un document xml par xpath
-void getNode_by_id(xmlChar *ref, xmlXPathContextPtr ctxt, xmlNodePtr noeud);
-void getNodeInformations(xmlNodePtr noeud, node n);
-void getBoundInformations(xmlNodePtr noeud,bounds b); //
-
+xmlXPathContextPtr get_xpath_contexte(xmlDocPtr doc);
+xmlXPathObjectPtr getNode_by_xpathExpression(char *nodePath, xmlXPathContextPtr ctxt);
+void xpath_parcours(xmlXPathObjectPtr xpathRes, xmlXPathContextPtr ctxt, SDL_Renderer *renderer); // parcours un document xml par xpath
+void parcours_des_noeuds_fils(xmlNodePtr n, xmlXPathContextPtr ctxt, SDL_Renderer *renderer);
+xmlNodePtr getNode_by_id(xmlChar *ref, xmlXPathContextPtr ctxt);
+node getNodeInformations(xmlNodePtr noeud);
+bounds getBoundInformations(xmlXPathContextPtr ctxt); //
+void parcours_attributs(xmlNodePtr noeud);
+void dessiner_trait_noeuds(node n1, node n2, SDL_Renderer *renderer);
+int calcul_coor_y(double d);
+int calcul_coor_x(double d);
 #endif
