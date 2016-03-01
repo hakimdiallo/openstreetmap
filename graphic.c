@@ -1,4 +1,4 @@
-#include "graphic.h"
+/*#include "graphic.h"
 
 
 void draw_fenetre(SDL_Surface **ecran,int x,int y,char title[] ){
@@ -125,7 +125,7 @@ void ligne(SDL_Surface *ecran,int x1, int y1, int x2, int y2, Uint32 coul)
   int d, dx, dy, aincr, bincr, xincr, yincr, x, y;
 
   if (abs(x2 - x1) < abs(y2 - y1)) {
-    /* parcours par l'axe vertical */
+    // parcours par l'axe vertical
 
     if (y1 > y2) {
       echangerEntiers(&x1, &x2);
@@ -154,7 +154,7 @@ void ligne(SDL_Surface *ecran,int x1, int y1, int x2, int y2, Uint32 coul)
     }
 
   } else {
-    /* parcours par l'axe horizontal */
+    // parcours par l'axe horizontal
 
     if (x1 > x2) {
       echangerEntiers(&x1, &x2);
@@ -239,3 +239,4 @@ void disque(SDL_Surface *ecran,int cx, int cy, int rayon, Uint32 coul)
     x++;
   }
 }
+*/

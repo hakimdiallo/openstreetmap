@@ -1,8 +1,8 @@
-#ifndef _GRAPHIC_H_
+/*#ifndef _GRAPHIC_H_
   #define _GRAPHIC_H_
 #include <stdlib.h>
 #include <stdio.h>
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 
 void attendreTouche();//Attend que l'utilisateur appuie sur une touche ou la croix rouge
@@ -34,3 +34,4 @@ void cercle(SDL_Surface *ecran,int cx, int cy, int rayon, Uint32 coul);
 void disque(SDL_Surface *ecran,int cx, int cy, int rayon, Uint32 coul);
 
 #endif
+*/
