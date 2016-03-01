@@ -1,6 +1,9 @@
 #include "osm.h"
 #include "string.h"
-#include "graphic.h"
+//#include "graphic.h"
+#include<SDL.h>
+
+bounds bn;
 
 int main(int argc, char *argv[]){
 	xmlDocPtr doc;
@@ -15,87 +18,53 @@ int main(int argc, char *argv[]){
 		free_file(doc);
 		return -1;
 	}
-	// Initialisation de l'environnement XPath
-	xmlXPathInit();
-	// Création du contexte
-	xmlXPathContextPtr ctxt = xmlXPathNewContext(doc); // doc est un xmlDocPtr représentant notre catalogue
-	if (ctxt == NULL) {
-	    fprintf(stderr, "Erreur lors de la création du contexte XPath\n");
-	    exit(-1);
-	}
+
+	xmlXPathContextPtr context = get_xpath_contexte(doc);
 	// Evaluation de l'expression XPath
-	xmlXPathObjectPtr xpathRes = xmlXPathEvalExpression(BAD_CAST "/osm/way", ctxt);
-	if (xpathRes == NULL) {
-	    fprintf(stderr, "Erreur sur l'expression XPath\n");
-	    exit(-1);
-	}
+	bn = getBoundInformations(context);
+	char *path = "/osm/way";
+	xmlXPathObjectPtr obj = getNode_by_xpathExpression(path,context);
 	// Manipulation du résultat
-	if (xpathRes->type == XPATH_NODESET) {
-	    int i;
-	    printf("Ways :\n");
-	    for (i = 0; i < xpathRes->nodesetval->nodeNr; i++) {
-					printf("wa---------------------------------------------------\n");
-	        xmlNodePtr n = xpathRes->nodesetval->nodeTab[i];
-	        if (n->type == XML_ELEMENT_NODE){ //|| n->type == XML_CDATA_SECTION_NODE) {
-							//xmlChar *id = xmlGetProp(n,(const xmlChar *)"id");
-							xmlNodePtr child = n->children;
-							while( child != NULL ){
-								if(xmlStrEqual(child->name,(const xmlChar *)"nd")){
-									xmlChar *ref = xmlGetProp(child,(const xmlChar *)"ref");
-									printf("nd: %s\n", ref);
-									xmlChar *expr;
-									xmlChar *expression = "/osm/node[@id=";
-									expr = xmlStrncatNew(expression,ref,xmlStrlen(ref));
 
-									xmlChar *fin = "]";
-									xmlChar *ex = xmlStrncatNew(expr,fin,xmlStrlen(fin));
-									printf("1 %s\n",ex );
-									//break;
-									xmlXPathObjectPtr node = xmlXPathEvalExpression(BAD_CAST ex, ctxt);
-									if(node == NULL){
-										return -1;
-									}
-									xmlNodePtr noeud = node->nodesetval->nodeTab[0];
+	SDL_Window *win = NULL;
+  SDL_Renderer *renderer = NULL;
+  //SDL_Texture *bitmapTex = NULL;
+  //SDL_Surface *bitmapSurface = NULL;
+  int posX = 100, posY = 100, width = WIDTH, height = HEIGHT;
 
-									xmlFree(expr);
-									xmlFree(expression);
-									xmlFree(ex);
-									xmlXPathFreeObject(node);
-								}
-								else {
-									xmlChar *k = xmlGetProp(child,(const xmlChar *)"k");
-									xmlChar *v = xmlGetProp(child,(const xmlChar *)"v");
-									printf("tag - k: %s v: %s\n", k, v);
-								}
-								child = child->next;
-							}
-	        }
-	    }
-	}
+  SDL_Init(SDL_INIT_VIDEO);
 
-	// Libération de la mémoire
-	xmlXPathFreeObject(xpathRes);
-	xmlXPathFreeContext(ctxt);
-	/*xmlNodePtr racine = get_root(doc);
-	if( racine == NULL ){
-		printf("Structure du fichier bizarre...\n");
-		free_file(doc);
-	}
-	parcours_prefixe(racine,afficher);
-	printf("Hey! look at u!...\n");*/
-	char title[50];
-	strcpy(title,"Carte");
-	SDL_Surface *ecran=NULL;
-	draw_fenetre(&ecran,600,800,title);
-	disque(ecran,(ecran->w)/2,(ecran->h)/2,250,SDL_MapRGB(ecran->format, 0x00, 0x80, 0x00));
-	actualiser(ecran);
-	attendreTouche();
-	effacerEcran(ecran,SDL_MapRGB(ecran->format, 0x00, 0x80, 0x00));
-	actualiser(ecran);
-	int x=(ecran->w)/2,y=(ecran->h)/2;
-	attendreTouche();
-	barre(ecran,x-(x/2),y-(y/2),x,y,SDL_MapRGB(ecran->format, 0x00, 0x00, 0x00));
-	actualiser(ecran);
-	attendreTouche();
+  win = SDL_CreateWindow("MY OSM RENDERER", posX, posY, width, height, 0);
+
+  renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
+	// clear screen with red color
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  SDL_RenderClear(renderer);
+  //bitmapSurface = SDL_LoadBMP("img/hello.bmp");
+  //bitmapTex = SDL_CreateTextureFromSurface(renderer, bitmapSurface);
+  //SDL_FreeSurface(bitmapSurface);
+	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+  //SDL_RenderDrawLine(renderer, 0, 0, 200, 500);
+	//SDL_RenderPresent(renderer);
+	xpath_parcours(obj,context,renderer);
+  while (1) {
+      SDL_Event e;
+      if (SDL_PollEvent(&e)) {
+          if (e.type == SDL_QUIT) {
+              break;
+          }
+      }
+
+      //SDL_RenderClear(renderer);
+      //SDL_RenderCopy(renderer, bitmapTex, NULL, NULL);
+      //SDL_RenderPresent(renderer);
+  }
+
+  //SDL_DestroyTexture(bitmapTex);
+  SDL_DestroyRenderer(renderer);
+  SDL_DestroyWindow(win);
+
+  SDL_Quit();
+	xmlXPathFreeObject(obj);
 	return 0;
 }

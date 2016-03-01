@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -g -Wall
-CPPFLAGS = `xml2-config --cflags --libs` `sdl-config --cflags --libs`
+CFLAGS = -g -lm -Wall
+CPPFLAGS = `xml2-config --cflags --libs` `sdl2-config --cflags --libs`
 EXEC = osm_main
 HEADERS = $(wildcard *.h)
 OBJECTS = $(patsubst %.c, %.o, $(wildcard *.c))
@@ -8,7 +8,7 @@ OBJECTS = $(patsubst %.c, %.o, $(wildcard *.c))
 all: $(EXEC)
 
 $(EXEC): $(OBJECTS)
-	$(CC) -o $@ $^ $(CPPFLAGS)
+	$(CC) -o $@ $^ $(CPPFLAGS) $(CFLAGS)
 
 %.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c $< $(CPPFLAGS)
