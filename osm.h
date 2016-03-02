@@ -6,9 +6,10 @@
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include <string.h>
-#include <SDL.h>
+#include<SDL.h>
 #include <math.h>
 
+#define DEBUG 1
 #define WIDTH 500
 #define HEIGHT 600
 #define CIRC_TERRE 40075.00
