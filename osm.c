@@ -97,8 +97,8 @@ void parcours_des_noeuds_fils(xmlNodePtr n, xmlXPathContextPtr ctxt, SDL_Rendere
         //commencer a construire un way
         xmlNodePtr noeud = getNode_by_id(ref,ctxt);
         xmlNodePtr noeud2 = getNode_by_id(ref2,ctxt);
-        node nd1 = getNodeInformations(noeud);
-        node nd2 = getNodeInformations(noeud2);
+        my_node nd1 = getNodeInformations(noeud);
+        my_node nd2 = getNodeInformations(noeud2);
         // Dessiner
         dessiner_trait_noeuds(nd1,nd2,renderer);
       }
@@ -125,7 +125,7 @@ xmlNodePtr getNode_by_id(xmlChar *ref, xmlXPathContextPtr ctxt){
     printf("1 %s\n",ex );
   //break;
   xmlXPathObjectPtr no = getNode_by_xpathExpression((char *)ex, ctxt);
-  if(node == NULL){
+  if(no == NULL){
     exit(-1);
   }
   xmlNodePtr noeud = no->nodesetval->nodeTab[0];
@@ -136,8 +136,8 @@ xmlNodePtr getNode_by_id(xmlChar *ref, xmlXPathContextPtr ctxt){
   return noeud;
 }
 
-node getNodeInformations(xmlNodePtr noeud){
-  node n;
+my_node getNodeInformations(xmlNodePtr noeud){
+  my_node n;
 
   xmlChar *lat = xmlGetProp(noeud,(const xmlChar *)"lat");
   xmlChar *lon = xmlGetProp(noeud,(const xmlChar *)"lon");
@@ -161,8 +161,8 @@ node getNodeInformations(xmlNodePtr noeud){
   return n;
 }
 
-bounds getBoundInformations(xmlXPathContextPtr ctxt){
-  bounds b;
+my_bounds getBoundInformations(xmlXPathContextPtr ctxt){
+  my_bounds b;
   xmlChar *expression = "/osm/bounds";
   //printf("1 %s\n",ex );
   //break;

@@ -3,7 +3,7 @@
 #include "graphic.h"
 #include<SDL.h>
 
-bounds bn;
+my_bounds bn;
 
 int main(int argc, char *argv[]){
 	xmlDocPtr doc;

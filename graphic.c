@@ -1,7 +1,7 @@
 #include "graphic.h"
 
 
-void dessiner_trait_noeuds(node n1, node n2, SDL_Renderer *renderer){
+void dessiner_trait_noeuds(my_node n1, my_node n2, SDL_Renderer *renderer){
   int x1 = calcul_coor_x(n1.lon);
   int y1 = calcul_coor_y(n1.lat);
   int x2 = calcul_coor_x(n2.lon);
