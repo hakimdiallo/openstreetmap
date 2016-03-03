@@ -1,6 +1,43 @@
-/*#include "graphic.h"
+#include "graphic.h"
 
 
+void dessiner_trait_noeuds(node n1, node n2, SDL_Renderer *renderer){
+  int x1 = calcul_coor_x(n1.lon);
+  int y1 = calcul_coor_y(n1.lat);
+  int x2 = calcul_coor_x(n2.lon);
+  int y2 = calcul_coor_y(n2.lat);
+  if(DEBUG)
+    printf("x1 %d y1 %d x2 %d y2 %d\n", x1, y1, x2, y2);
+  SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
+	SDL_RenderPresent(renderer);
+}
+
+void afficher(xmlNodePtr noeud) {
+        if (noeud->type == XML_ELEMENT_NODE ) {
+    	    xmlChar *id=xmlGetProp(noeud,(const xmlChar *)"id");//retourne valeur de l'attribut id du noeud
+    	    xmlChar *visible=xmlGetProp(noeud,(const xmlChar *)"visible");
+    	    xmlChar *k=xmlGetProp(noeud,(const xmlChar *)"k");
+    	    xmlChar *v=xmlGetProp(noeud,(const xmlChar *)"v");
+          if(DEBUG){
+      	    printf("noeud:%s , ",noeud->name);
+      	    if(id!=NULL)
+      	      printf("id:%s , ",id);
+      	    if(visible!=NULL)
+      	      printf("visible:%s , ",visible);
+      	    if(k!=NULL)
+      	      printf("k:%s , ",k);
+      	    if(v!=NULL)
+      	      printf("v:%s , ",v);
+      	    printf("\n");
+          }
+    	    xmlFree(id);
+    	    xmlFree(visible);
+    	    xmlFree(k);
+    	    xmlFree(v);
+        }
+}
+
+/*
 void draw_fenetre(SDL_Surface **ecran,int x,int y,char title[] ){
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {

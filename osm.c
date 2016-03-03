@@ -34,30 +34,6 @@ void parcours_prefixe(xmlNodePtr noeud, fct_parcours_t f) {
     }
 }
 
-void afficher(xmlNodePtr noeud) {
-        if (noeud->type == XML_ELEMENT_NODE ) {
-    	    xmlChar *id=xmlGetProp(noeud,(const xmlChar *)"id");//retourne valeur de l'attribut id du noeud
-    	    xmlChar *visible=xmlGetProp(noeud,(const xmlChar *)"visible");
-    	    xmlChar *k=xmlGetProp(noeud,(const xmlChar *)"k");
-    	    xmlChar *v=xmlGetProp(noeud,(const xmlChar *)"v");
-          if(DEBUG){
-      	    printf("noeud:%s , ",noeud->name);
-      	    if(id!=NULL)
-      	      printf("id:%s , ",id);
-      	    if(visible!=NULL)
-      	      printf("visible:%s , ",visible);
-      	    if(k!=NULL)
-      	      printf("k:%s , ",k);
-      	    if(v!=NULL)
-      	      printf("v:%s , ",v);
-      	    printf("\n");
-          }
-    	    xmlFree(id);
-    	    xmlFree(visible);
-    	    xmlFree(k);
-    	    xmlFree(v);
-        }
-}
 
 xmlXPathContextPtr get_xpath_contexte(xmlDocPtr doc){
   // Initialisation de l'environnement XPath
@@ -148,28 +124,29 @@ xmlNodePtr getNode_by_id(xmlChar *ref, xmlXPathContextPtr ctxt){
   if(DEBUG)
     printf("1 %s\n",ex );
   //break;
-  xmlXPathObjectPtr node = getNode_by_xpathExpression((char *)ex, ctxt);
+  xmlXPathObjectPtr no = getNode_by_xpathExpression((char *)ex, ctxt);
   if(node == NULL){
     exit(-1);
   }
-  xmlNodePtr noeud = node->nodesetval->nodeTab[0];
+  xmlNodePtr noeud = no->nodesetval->nodeTab[0];
   if(DEBUG)
     printf("%s\n",noeud->name );
 
-  xmlXPathFreeObject(node);
+  xmlXPathFreeObject(no);
   return noeud;
 }
 
 node getNodeInformations(xmlNodePtr noeud){
   node n;
+
   xmlChar *lat = xmlGetProp(noeud,(const xmlChar *)"lat");
   xmlChar *lon = xmlGetProp(noeud,(const xmlChar *)"lon");
   if(DEBUG){
     printf("Lon: %s\n", lon);
     printf("Lat: %s\n", lat);
   }
-  n.lat = strtod((const char *)lat,NULL);
-  n.lon = strtod((const char *)lon,NULL);
+  n.lat = CIRC_TERRE*cos(strtod((const char *)lat,NULL));
+  n.lon = CIRC_TERRE*cos(strtod((const char *)lon,NULL));
   if(DEBUG){
     printf("ffff %f\n",n.lat );
   //xmlChar *visible = xmlGetProp(noeud,(const xmlChar *)"visible");
@@ -218,33 +195,20 @@ void parcours_attributs(xmlNodePtr noeud){
   }
 }
 
-void dessiner_trait_noeuds(node n1, node n2, SDL_Renderer *renderer){
-  int x1 = calcul_coor_x(n1.lon);
-  int y1 = calcul_coor_y(n1.lat);
-  int x2 = calcul_coor_x(n2.lon);
-  int y2 = calcul_coor_y(n2.lat);
-  if(DEBUG)
-    printf("x1 %d y1 %d x2 %d y2 %d\n", x1, y1, x2, y2);
-  SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
-	SDL_RenderPresent(renderer);
-}
-
 int calcul_coor_y(double d){
-  double r = CIRC_TERRE*cos(d);
   if(DEBUG){
     printf("min lat %f\n",bn.minlat );
-    printf("x - %f\n", r);
+    printf("x - %f\n", d);
     printf("max lat %f\n", bn.maxlat);
   }
-  return HEIGHT - (int)( HEIGHT * ((r - bn.minlat)/(bn.maxlat - bn.minlat)) );
+  return HEIGHT - (int)( HEIGHT * ((d - bn.minlat)/(bn.maxlat - bn.minlat)) );
 }
 
 int calcul_coor_x(double d){
-  double r = CIRC_TERRE*cos(d);
   if(DEBUG){
     printf("min lon %f\n",bn.minlon);
-    printf("y - %f\n", r);
+    printf("y - %f\n", d);
     printf("max lon %f\n", bn.maxlon);
   }
-  return (int)( WIDTH * ((r - bn.minlon)/(bn.maxlon - bn.minlon)) );
+  return (int)( WIDTH * ((d - bn.minlon)/(bn.maxlon - bn.minlon)) );
 }

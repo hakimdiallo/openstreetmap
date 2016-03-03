@@ -1,10 +1,15 @@
-/*#ifndef _GRAPHIC_H_
+#ifndef _GRAPHIC_H_
   #define _GRAPHIC_H_
 #include <stdlib.h>
 #include <stdio.h>
 #include <SDL.h>
+#include "osm.h"
 
-
+  void afficher(xmlNodePtr noeud);
+  void dessiner_trait_noeuds(node n1, node n2, SDL_Renderer *renderer);
+  
+#endif
+/*
 void attendreTouche();//Attend que l'utilisateur appuie sur une touche ou la croix rouge
 void draw_fenetre(SDL_Surface **ecran,int x,int y,char title[] );//Crée une fenêtre de taille x*y avec un titre
 void effacerEcran(SDL_Surface *ecran,Uint32 coul);//Remplit entièrement l'écran de la couleur choisit
@@ -32,6 +37,4 @@ void ligne(SDL_Surface *ecran,int x1, int y1, int x2, int y2, Uint32 coul);
 void cercle(SDL_Surface *ecran,int cx, int cy, int rayon, Uint32 coul);
 //Déssine un cercle plein de couleur (coul) avec pour centre cx,cy et pour rayon (rayon)
 void disque(SDL_Surface *ecran,int cx, int cy, int rayon, Uint32 coul);
-
-#endif
 */

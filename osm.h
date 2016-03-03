@@ -9,7 +9,7 @@
 #include<SDL.h>
 #include <math.h>
 
-#define DEBUG 1
+#define DEBUG 0
 #define WIDTH 500
 #define HEIGHT 600
 #define CIRC_TERRE 40075.00
@@ -37,7 +37,7 @@ typedef struct node {
 	double lon;
 	double lat;
 	//attributs at;
-	//tag t[];
+	tag t[];
 } node;
 
 typedef struct way {
@@ -63,7 +63,6 @@ xmlDocPtr parse_file(char *name); // Parse un document xml et retourne un pointe
 xmlNodePtr get_root(xmlDocPtr doc); // retourne le noeud racine s'il existe ou null sinon
 void free_file(xmlDocPtr doc); // Libere le fichier xml (Libère la mémoire)
 void parcours_prefixe(xmlNodePtr noeud, fct_parcours_t f); // Parcours en profondeur des noeuds du fichier xml
-void afficher(xmlNodePtr noeud);
 xmlXPathContextPtr get_xpath_contexte(xmlDocPtr doc);
 xmlXPathObjectPtr getNode_by_xpathExpression(char *nodePath, xmlXPathContextPtr ctxt);
 void xpath_parcours(xmlXPathObjectPtr xpathRes, xmlXPathContextPtr ctxt, SDL_Renderer *renderer); // parcours un document xml par xpath
@@ -72,7 +71,7 @@ xmlNodePtr getNode_by_id(xmlChar *ref, xmlXPathContextPtr ctxt);
 node getNodeInformations(xmlNodePtr noeud);
 bounds getBoundInformations(xmlXPathContextPtr ctxt); //
 void parcours_attributs(xmlNodePtr noeud);
-void dessiner_trait_noeuds(node n1, node n2, SDL_Renderer *renderer);
 int calcul_coor_y(double d);
 int calcul_coor_x(double d);
+
 #endif
