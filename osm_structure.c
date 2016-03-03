@@ -34,6 +34,7 @@ void add_node_my_way(my_way *way,my_node node){
 void free_my_way(my_way *way){
   free(way->nodes);
   free(way->tag);
+  free(way);
 }
 
 my_node* init_my_node(){
@@ -56,4 +57,35 @@ void add_tag_my_node(my_node *node, my_tag tag){
 
 void free_my_node(my_node *node){
   free(node->tag);
+  free(node);
+}
+
+hashmap_node* init_hashmap(int startsize){
+  hashmap_node* hm = (hashmap_node*)malloc(sizeof(hashmap_node));
+  hm->map = (hashmap_entry*)calloc(sizeof(hashmap_entry), startsize);
+  hm->size = startsize;
+  hm->count = 0;
+
+  return hm;
+}
+
+void add_node_hashmap(hashmap* hash, my_node *node, int id){
+  int index, i, step;
+
+  do
+  {
+    index = key % hash->size;
+    step = (key % (hash->size-2)) + 1;
+
+    for (i = 0; i < hash->size; i++){
+        hash->table[index].flags |= ACTIVE;
+        hash->table[index].data = (void*)data;
+        hash->table[index].key = key;
+        ++hash->count;
+        return;
+
+      index = (index + step) % hash->size;
+    }
+  }
+  while (1);
 }

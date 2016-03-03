@@ -51,6 +51,18 @@ typedef struct my_bounds{
 	double minlon;
 }my_bounds;
 
+// l'entree de l'hashmap
+typedef struct hashmap_entry{
+	int id;
+	my_node *node;
+} hashmap_entry;
+
+
+typedef struct hashmap_node{
+	hashmap_entry *map;
+	int size, count;
+} hashmap_node;
+
 //Innitialise la structure my_way
 my_way* init_my_way();
 
@@ -72,6 +84,8 @@ void free_my_node(my_node *node);
 //ajoute un tag dans un node
 void add_tag_my_node(my_node *node, my_tag tag);
 
+// initialise un hashmap avec une taille donnée
+hashmap_node* init_hashmap(int startsize);
 
 
 #endif
