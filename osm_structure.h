@@ -66,6 +66,9 @@ void free_my_way(my_way *way);
 //Initialise un noeud
 my_node* init_my_node();
 
+//Libère la structure my_node
+void free_my_node(my_node *node);
+
 //ajoute un tag dans un node
 void add_tag_my_node(my_node *node, my_tag tag);
 

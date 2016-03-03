@@ -51,3 +51,7 @@ void add_tag_my_node(my_node *node, my_tag tag){
   node->tag[node->count_tag] = tag;
   (node->count_tag)++;
 }
+
+void free_my_node(my_node *node){
+  free(node->tag);
+}
