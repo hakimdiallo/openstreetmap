@@ -54,8 +54,8 @@ xmlXPathObjectPtr getNode_by_xpathExpression(char *nodePath, xmlXPathContextPtr 
   // Evaluation de l'expression XPath
   xmlXPathObjectPtr pathObj = xmlXPathEvalExpression(BAD_CAST nodePath, ctxt);
 	if (pathObj == NULL) {
-    if(DEBUG)
-      fprintf(stderr, "Erreur sur l'expression XPath\n");
+    //if(DEBUG)
+    fprintf(stderr, "Erreur sur l'expression XPath\n");
 	  exit(-1);
 	}
   return pathObj;
@@ -88,30 +88,31 @@ void xpath_parcours(xmlXPathObjectPtr xpathRes, xmlXPathContextPtr ctxt, SDL_Ren
 void parcours_des_noeuds_fils(xmlNodePtr n, xmlXPathContextPtr ctxt, SDL_Renderer *renderer){
   if(DEBUG)
     printf("Parcours des noeuds fils\n");
+  my_way *way = init_my_way();
+  if(way == NULL){
+    fprintf(stderr, "Erreur sur l'expression XPath\n");
+	  exit(-1);
+  }
   xmlNodePtr child = n->children;
   while( child != NULL ){
     if(xmlStrEqual(child->name,(const xmlChar *)"nd")){
-      if(child->prev != NULL){
         xmlChar *ref = xmlGetProp(child,(const xmlChar *)"ref");
-        xmlChar *ref2 = xmlGetProp(child->prev,(const xmlChar *)"ref");
-        //commencer a construire un way
         xmlNodePtr noeud = getNode_by_id(ref,ctxt);
-        xmlNodePtr noeud2 = getNode_by_id(ref2,ctxt);
-        my_node nd1 = getNodeInformations(noeud);
-        my_node nd2 = getNodeInformations(noeud2);
-        // Dessiner
-        dessiner_trait_noeuds(nd1,nd2,renderer);
-      }
+        xmlChar *visible = xmlGetProp(noeud,(const xmlChar *)"visible");
+        if( xmlStrEqual(visible,(const xmlChar *)"true") ){
+          my_node *nd1 = getNodeInformations(noeud);
+          add_node_my_way(way,*nd1);
+        }
     }
     else {
-      xmlChar *k = xmlGetProp(child,(const xmlChar *)"k");
-      xmlChar *v = xmlGetProp(child,(const xmlChar *)"v");
-      if(DEBUG)
-        printf("tag - k: %s v: %s\n", k, v);
-
+      my_tag tag = getTagInformations(child);
+      add_tag_my_way(way,tag);
     }
     child = child->next;
   }
+  // Dessiner un my_way
+  dessiner_way_bis(*way,renderer);
+  free_my_way(way);
 }
 
 xmlNodePtr getNode_by_id(xmlChar *ref, xmlXPathContextPtr ctxt){
@@ -136,8 +137,8 @@ xmlNodePtr getNode_by_id(xmlChar *ref, xmlXPathContextPtr ctxt){
   return noeud;
 }
 
-my_node getNodeInformations(xmlNodePtr noeud){
-  my_node n;
+my_node *getNodeInformations(xmlNodePtr noeud){
+  my_node *n = init_my_node();
 
   xmlChar *lat = xmlGetProp(noeud,(const xmlChar *)"lat");
   xmlChar *lon = xmlGetProp(noeud,(const xmlChar *)"lon");
@@ -145,18 +146,17 @@ my_node getNodeInformations(xmlNodePtr noeud){
     printf("Lon: %s\n", lon);
     printf("Lat: %s\n", lat);
   }
-  n.lat = CIRC_TERRE*cos(strtod((const char *)lat,NULL));
-  n.lon = CIRC_TERRE*cos(strtod((const char *)lon,NULL));
+  n->lat = CIRC_TERRE*cos(strtod((const char *)lat,NULL));
+  n->lon = CIRC_TERRE*cos(strtod((const char *)lon,NULL));
   if(DEBUG){
-    printf("ffff %f\n",n.lat );
-  //xmlChar *visible = xmlGetProp(noeud,(const xmlChar *)"visible");
-  //xmlNodePtr child = noeud->children;
+    printf("ffff %f\n",n->lat );
     printf("Done...\n");
-  //while( child != NULL ){
-
-  //}
-  //xmlFree(lat);
-  //xmlFree(lon);
+  }
+  xmlNodePtr child = noeud->children;
+  while ( child != NULL ) {
+    my_tag tag = getTagInformations(child);
+    add_tag_my_node(n,tag);
+    child = child->next;
   }
   return n;
 }
@@ -182,6 +182,17 @@ my_bounds getBoundInformations(xmlXPathContextPtr ctxt){
 
   xmlXPathFreeObject(node);
   return b;
+}
+
+my_tag getTagInformations(xmlNodePtr node){
+  my_tag tag;
+  xmlChar *k = xmlGetProp(node,(const xmlChar *)"k");
+  xmlChar *v = xmlGetProp(node,(const xmlChar *)"v");
+  if(DEBUG)
+    printf("tag - k: %s v: %s\n", k, v);
+  strcpy(tag.key,(char *)k);
+  strcpy(tag.value,(char *)v);
+  return tag;
 }
 
 void parcours_attributs(xmlNodePtr noeud){

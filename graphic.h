@@ -6,8 +6,10 @@
 #include "osm.h"
 #include "osm_structure.h"
 
-  void afficher(xmlNodePtr noeud);
-  void dessiner_trait_noeuds(my_node n1, my_node n2, SDL_Renderer *renderer);
+void afficher(xmlNodePtr noeud);
+void dessiner_trait_noeuds(my_node n1, my_node n2, SDL_Renderer *renderer);
+void dessiner_way(my_way way, SDL_Renderer *renderer);
+void dessiner_way_bis(my_way way, SDL_Renderer *renderer);
 
 #endif
 /*

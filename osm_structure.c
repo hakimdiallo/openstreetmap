@@ -3,6 +3,7 @@
 
 my_way* init_my_way(){
   my_way *way = NULL;
+  way  = malloc(sizeof(my_way));
   way->nodes = malloc(MY_NODE_SIZE*sizeof(my_node));
   way->tag = malloc(MY_TAG_SIZE*sizeof(my_tag));
   way->count_nodes = 0;
@@ -36,7 +37,8 @@ void free_my_way(my_way *way){
 }
 
 my_node* init_my_node(){
-  my_node *node=NULL;
+  my_node *node = NULL;
+  node = malloc(sizeof(my_node));
   node->tag=malloc(MY_TAG_SIZE*sizeof(my_tag));
   node->count_tag=0;
   node->size_tag=MY_TAG_SIZE;

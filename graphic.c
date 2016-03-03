@@ -1,5 +1,15 @@
 #include "graphic.h"
 
+SDL_Point *get_tab_point_nodes(my_way way){
+  SDL_Point *points = NULL;
+  points = malloc(way.count_nodes * sizeof(SDL_Point));
+  int i;
+  for (i = 0;i < way.count_nodes;i++) {
+    points[i].x = calcul_coor_x(way.nodes[i].lon);
+    points[i].y = calcul_coor_y(way.nodes[i].lat);
+  }
+  return points;
+}
 
 void dessiner_trait_noeuds(my_node n1, my_node n2, SDL_Renderer *renderer){
   int x1 = calcul_coor_x(n1.lon);
@@ -35,6 +45,18 @@ void afficher(xmlNodePtr noeud) {
     	    xmlFree(k);
     	    xmlFree(v);
         }
+}
+void dessiner_way(my_way way, SDL_Renderer *renderer){
+  int i;
+  for (i = 0; i < way.count_nodes-1; i++) {
+    dessiner_trait_noeuds(way.nodes[i],way.nodes[i+1],renderer);
+  }
+}
+
+void dessiner_way_bis(my_way way, SDL_Renderer *renderer){
+  SDL_Point *pts = get_tab_point_nodes(way);
+  SDL_RenderDrawLines(renderer,pts,way.count_nodes);
+	SDL_RenderPresent(renderer);
 }
 
 /*

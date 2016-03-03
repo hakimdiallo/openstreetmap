@@ -40,7 +40,7 @@ int main(int argc, char *argv[]){
 
   renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
 	// clear screen with red color
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   SDL_RenderClear(renderer);
   //bitmapSurface = SDL_LoadBMP("img/hello.bmp");
   //bitmapTex = SDL_CreateTextureFromSurface(renderer, bitmapSurface);

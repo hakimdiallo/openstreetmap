@@ -30,10 +30,11 @@ xmlXPathObjectPtr getNode_by_xpathExpression(char *nodePath, xmlXPathContextPtr 
 void xpath_parcours(xmlXPathObjectPtr xpathRes, xmlXPathContextPtr ctxt, SDL_Renderer *renderer); // parcours un document xml par xpath
 void parcours_des_noeuds_fils(xmlNodePtr n, xmlXPathContextPtr ctxt, SDL_Renderer *renderer);
 xmlNodePtr getNode_by_id(xmlChar *ref, xmlXPathContextPtr ctxt);
-my_node getNodeInformations(xmlNodePtr noeud);
+my_node *getNodeInformations(xmlNodePtr noeud);
 my_bounds getBoundInformations(xmlXPathContextPtr ctxt); //
 void parcours_attributs(xmlNodePtr noeud);
 int calcul_coor_y(double d);
 int calcul_coor_x(double d);
+my_tag getTagInformations(xmlNodePtr node);
 
 #endif
