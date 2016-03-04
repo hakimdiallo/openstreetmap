@@ -3,7 +3,7 @@
 
 #define MY_TAG_SIZE 20
 #define MY_NODE_SIZE 100
-
+#define ACTIVE 1
 
 typedef struct my_tag {
 	char key[1024];
@@ -12,7 +12,7 @@ typedef struct my_tag {
 
 typedef struct my_attributs {
 	int id;
-	char *visible;
+	char visible[10];
 	/*
 		char *user;
 		int uid;
@@ -24,7 +24,7 @@ typedef struct my_attributs {
 typedef struct my_node {
 	double lon;
 	double lat;
-	//attributs at;
+	my_attributs at;
 	my_tag *tag;
 	int size_tag;
 	int count_tag;
@@ -53,15 +53,16 @@ typedef struct my_bounds{
 
 // l'entree de l'hashmap
 typedef struct hashmap_entry{
-	int id;
+	unsigned long id;
 	my_node *node;
+	int flags;
 } hashmap_entry;
 
 
-typedef struct hashmap_node{
-	hashmap_entry *map;
+typedef struct hashmap_my_node{
+	hashmap_entry *table;
 	int size, count;
-} hashmap_node;
+} hashmap_my_node;
 
 //Innitialise la structure my_way
 my_way* init_my_way();
@@ -85,7 +86,15 @@ void free_my_node(my_node *node);
 void add_tag_my_node(my_node *node, my_tag tag);
 
 // initialise un hashmap avec une taille donnée
-hashmap_node* init_hashmap(int startsize);
+hashmap_my_node* init_hashmap(int startsize);
 
+//Ajoute un noeud dans l'hashmap
+void add_node_hashmap ( hashmap_my_node* hash, my_node *node, unsigned long id);
+
+//Recupère le my_node qui a l'id entrée en paramètre
+my_node* get_hashmap_node(hashmap_my_node* hash, unsigned long id);
+
+//Libère la structure hashmap
+void free_hashmap_node(hashmap_my_node* hash);
 
 #endif

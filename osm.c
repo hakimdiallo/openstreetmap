@@ -1,5 +1,6 @@
 #include "osm.h"
 
+
 xmlDocPtr parse_file(char *name){
 	// Ouverture du document
   xmlKeepBlanksDefault(0); // Ignore les noeuds texte composant la mise en forme
@@ -35,11 +36,11 @@ void parcours_prefixe(xmlNodePtr noeud, fct_parcours_t f) {
 }
 
 
-xmlXPathContextPtr get_xpath_contexte(xmlDocPtr doc){
+xmlXPathContextPtr* get_xpath_contexte(xmlDocPtr doc){
   // Initialisation de l'environnement XPath
 	xmlXPathInit();
 	// Création du contexte
-	xmlXPathContextPtr ctxt = xmlXPathNewContext(doc); // doc est un xmlDocPtr représentant notre fichier osm
+	xmlXPathContextPtr* ctxt = xmlXPathNewContext(doc); // doc est un xmlDocPtr représentant notre fichier osm
 	if (ctxt == NULL) {
       if(DEBUG)
 	     fprintf(stderr, "Erreur lors de la création du contexte XPath\n");
@@ -82,7 +83,7 @@ void xpath_parcours(xmlXPathObjectPtr xpathRes, xmlXPathContextPtr ctxt, SDL_Ren
   }
   // Libération de la mémoire
   //xmlXPathFreeObject(xpathRes);
-  xmlXPathFreeContext(ctxt);
+  //xmlXPathFreeContext(ctxt);
 }
 
 void parcours_des_noeuds_fils(xmlNodePtr n, xmlXPathContextPtr ctxt, SDL_Renderer *renderer){
@@ -90,7 +91,7 @@ void parcours_des_noeuds_fils(xmlNodePtr n, xmlXPathContextPtr ctxt, SDL_Rendere
     printf("Parcours des noeuds fils\n");
   my_way *way = init_my_way();
   if(way == NULL){
-    fprintf(stderr, "Erreur sur l'expression XPath\n");
+    fprintf(stderr, "Erreur à l'innitialisation du way\n");
 	  exit(-1);
   }
   xmlNodePtr child = n->children;
@@ -115,12 +116,46 @@ void parcours_des_noeuds_fils(xmlNodePtr n, xmlXPathContextPtr ctxt, SDL_Rendere
   free_my_way(way);
 }
 
+//Parcours et stockage des noeuds dans une hashmap
+hashmap_my_node* stockage_nodes(xmlXPathContextPtr ctxt){
+  xmlXPathObjectPtr xpathRes = xmlXPathEvalExpression(BAD_CAST "/osm/node[@visible='true']", ctxt);
+  if (xpathRes == NULL) {
+    fprintf(stderr, " une Erreur sur l'expression XPath\n");
+    exit(-1);
+  }
+  hashmap_my_node *nodes=NULL;
+  if (xpathRes->type == XPATH_NODESET) {
+    if(DEBUG)
+      printf("call init_hashmap\n");
+    nodes = init_hashmap(xpathRes->nodesetval->nodeNr);
+    if(nodes == NULL){
+      fprintf(stderr, "Erreur à l'innitialisation de l'hashmap de nodes\n");
+  	  exit(-1);
+    }
+    int i;
+    if(DEBUG)
+      printf("Les nodes du document :\n");
+    for (i = 0; i < 60; i++) {
+        my_node *node = getNodeInformations(xpathRes->nodesetval->nodeTab[i]);
+        if(node==NULL){
+          fprintf(stderr, "Erreur lors de la récuperation l'objet my_node\n");
+            exit(-1);
+        }
+        printf("%d",i);
+        add_node_hashmap(nodes, node, node->at.id);
+    }
+    printf(" nbre noeud: %d",xpathRes->nodesetval->nodeNr);
+    return nodes;
+  }
+  return nodes;
+}
+
 xmlNodePtr getNode_by_id(xmlChar *ref, xmlXPathContextPtr ctxt){
   xmlChar *expr;
   xmlChar *expression = "/osm/node[@id=";
   expr = xmlStrncatNew(expression,ref,xmlStrlen(ref));
 
-  xmlChar *fin = "]";
+  xmlChar *fin = BAD_CAST "]";
   xmlChar *ex = xmlStrncatNew(expr,fin,xmlStrlen(fin));
   if(DEBUG)
     printf("1 %s\n",ex );
@@ -140,6 +175,8 @@ xmlNodePtr getNode_by_id(xmlChar *ref, xmlXPathContextPtr ctxt){
 my_node *getNodeInformations(xmlNodePtr noeud){
   my_node *n = init_my_node();
 
+  n->at.id = strtod( (const char *) xmlGetProp(noeud,BAD_CAST "id"), NULL);
+  strcpy(n->at.visible, (const char *)xmlGetProp(noeud,BAD_CAST "visible"));
   xmlChar *lat = xmlGetProp(noeud,(const xmlChar *)"lat");
   xmlChar *lon = xmlGetProp(noeud,(const xmlChar *)"lon");
   if(DEBUG){
@@ -149,7 +186,7 @@ my_node *getNodeInformations(xmlNodePtr noeud){
   n->lat = CIRC_TERRE*cos(strtod((const char *)lat,NULL));
   n->lon = CIRC_TERRE*cos(strtod((const char *)lon,NULL));
   if(DEBUG){
-    printf("ffff %f\n",n->lat );
+    printf("lat %f\n",n->lat );
     printf("Done...\n");
   }
   xmlNodePtr child = noeud->children;

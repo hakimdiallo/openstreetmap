@@ -61,12 +61,15 @@ int main(int argc, char *argv[]){
       //SDL_RenderCopy(renderer, bitmapTex, NULL, NULL);
       //SDL_RenderPresent(renderer);
   }
-
+	hashmap_my_node* nodes=stockage_nodes(context);
+	int i=0;
+	printf(" valeur %sn", get_hashmap_node(nodes, 1321042431) );
   //SDL_DestroyTexture(bitmapTex);
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(win);
-
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(win);
   SDL_Quit();
 	xmlXPathFreeObject(obj);
+	xmlXPathFreeContext(context);
+	xmlFreeDoc(doc);
 	return 0;
 }

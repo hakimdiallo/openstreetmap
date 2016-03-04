@@ -10,7 +10,7 @@
 #include <math.h>
 #include "osm_structure.h"
 
-#define DEBUG 0
+#define DEBUG 1
 #define WIDTH 500
 #define HEIGHT 600
 #define CIRC_TERRE 40075.00
@@ -25,7 +25,7 @@ xmlDocPtr parse_file(char *name); // Parse un document xml et retourne un pointe
 xmlNodePtr get_root(xmlDocPtr doc); // retourne le noeud racine s'il existe ou null sinon
 void free_file(xmlDocPtr doc); // Libere le fichier xml (Libère la mémoire)
 void parcours_prefixe(xmlNodePtr noeud, fct_parcours_t f); // Parcours en profondeur des noeuds du fichier xml
-xmlXPathContextPtr get_xpath_contexte(xmlDocPtr doc);
+xmlXPathContextPtr* get_xpath_contexte(xmlDocPtr doc);
 xmlXPathObjectPtr getNode_by_xpathExpression(char *nodePath, xmlXPathContextPtr ctxt);
 void xpath_parcours(xmlXPathObjectPtr xpathRes, xmlXPathContextPtr ctxt, SDL_Renderer *renderer); // parcours un document xml par xpath
 void parcours_des_noeuds_fils(xmlNodePtr n, xmlXPathContextPtr ctxt, SDL_Renderer *renderer);
@@ -36,5 +36,5 @@ void parcours_attributs(xmlNodePtr noeud);
 int calcul_coor_y(double d);
 int calcul_coor_x(double d);
 my_tag getTagInformations(xmlNodePtr node);
-
+hashmap_my_node* stockage_nodes(xmlXPathContextPtr ctxt);
 #endif

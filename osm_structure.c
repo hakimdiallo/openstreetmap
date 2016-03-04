@@ -60,32 +60,75 @@ void free_my_node(my_node *node){
   free(node);
 }
 
-hashmap_node* init_hashmap(int startsize){
-  hashmap_node* hm = (hashmap_node*)malloc(sizeof(hashmap_node));
-  hm->map = (hashmap_entry*)calloc(sizeof(hashmap_entry), startsize);
+hashmap_my_node* init_hashmap(int startsize){
+  hashmap_my_node* hm = (hashmap_my_node*)malloc(sizeof(hashmap_my_node));
+  hm->table = (hashmap_entry*)calloc(sizeof(hashmap_entry), startsize);
   hm->size = startsize;
   hm->count = 0;
-
   return hm;
 }
 
-void add_node_hashmap(hashmap* hash, my_node *node, int id){
+void add_node_hashmap(hashmap_my_node* hash, my_node *node, unsigned long id){
   int index, i, step;
-
+  printf("boucle ajout");
   do
   {
-    index = key % hash->size;
-    step = (key % (hash->size-2)) + 1;
+    index = id % hash->size;
+    step = (id % (hash->size-2)) + 1;
 
     for (i = 0; i < hash->size; i++){
+      if (hash->table[index].flags & ACTIVE)
+      {
+        if (hash->table[index].id == id)
+        {
+          hash->table[index].node = node;
+          return;
+        }
+      }
+      else
+      {
         hash->table[index].flags |= ACTIVE;
-        hash->table[index].data = (void*)data;
-        hash->table[index].key = key;
+        hash->table[index].node = node;
+        hash->table[index].id = id;
         ++hash->count;
         return;
-
+      }
       index = (index + step) % hash->size;
     }
   }
   while (1);
+}
+
+my_node* get_hashmap_node(hashmap_my_node* hash, unsigned long id)
+{
+  //Si l'hashmap contient un élément
+  if (hash->count)
+  {
+    int index, i, step;
+    index = id % hash->size;
+    step = (id % (hash->size-2)) + 1;
+
+    for (i = 0; i < hash->size; i++)
+    {
+      if (hash->table[index].id == id)
+      {
+        if (hash->table[index].flags & ACTIVE)
+          return hash->table[index].node;
+        break;
+      }
+      else
+        if (!hash->table[index].node)
+          break;
+
+      index = (index + step) % hash->size;
+    }
+  }
+
+  return 0;
+}
+
+void free_hashmap_node(hashmap_my_node* hash)
+{
+  free(hash->table);
+  free(hash);
 }
