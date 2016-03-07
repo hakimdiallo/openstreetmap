@@ -2,20 +2,20 @@
 #include "string.h"
 #include "graphic.h"
 #include<SDL.h>
+#include <stdlib.h>
 
 my_bounds bn;
 
 int main(int argc, char *argv[]){
 	xmlDocPtr doc;
-	if(DEBUG)
-		printf("Parsing file xml...\n");
+	//if(DEBUG)
+		//printf("Parsing file xml...\n");
 	if(argc < 2 || argc > 2){
 		printf("1 argument manquand: le nom du fichier xml/osm a parser.\n");
 		return -1;
 	}
 	doc = parse_file(argv[1]);
 	if( doc == NULL ){
-		if(DEBUG)
 			printf("Something went wrong...\n");
 		free_file(doc);
 		return -1;
@@ -24,10 +24,12 @@ int main(int argc, char *argv[]){
 	xmlXPathContextPtr context = get_xpath_contexte(doc);
 	// Evaluation de l'expression XPath
 	bn = getBoundInformations(context);
+	//if( DEBUG )
+		//printf("%f %f %f %f\n",bn.minlon,bn.minlat,bn.maxlon,bn.maxlat);
 	char *path = "/osm/way";
 	xmlXPathObjectPtr obj = getNode_by_xpathExpression(path,context);
 	// Manipulation du résultat
-
+	my_way **ways = xpath_parcours(obj,context);
 	SDL_Window *win = NULL;
   SDL_Renderer *renderer = NULL;
   //SDL_Texture *bitmapTex = NULL;
@@ -48,7 +50,7 @@ int main(int argc, char *argv[]){
 	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
   //SDL_RenderDrawLine(renderer, 0, 0, 200, 500);
 	//SDL_RenderPresent(renderer);
-	xpath_parcours(obj,context,renderer);
+	dessiner_ways(ways,obj->nodesetval->nodeNr,renderer);
   while (1) {
       SDL_Event e;
       if (SDL_PollEvent(&e)) {
@@ -61,9 +63,9 @@ int main(int argc, char *argv[]){
       //SDL_RenderCopy(renderer, bitmapTex, NULL, NULL);
       //SDL_RenderPresent(renderer);
   }
-	hashmap_my_node* nodes=stockage_nodes(context);
-	int i=0;
-	printf(" valeur %sn", get_hashmap_node(nodes, 1321042431) );
+	//my_hashmap_node* nodes=stockage_nodes(context);
+	//int i=0;
+	//printf(" valeur %s\n", get_hashmap_node(nodes, 1321042431) );
   //SDL_DestroyTexture(bitmapTex);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(win);
