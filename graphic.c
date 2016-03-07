@@ -1,12 +1,12 @@
 #include "graphic.h"
 
-SDL_Point *get_tab_point_nodes(my_way way){
+SDL_Point *get_tab_point_nodes(my_way *way){
   SDL_Point *points = NULL;
-  points = malloc(way.count_nodes * sizeof(SDL_Point));
+  points = malloc(way->count_nodes * sizeof(SDL_Point));
   int i;
-  for (i = 0;i < way.count_nodes;i++) {
-    points[i].x = calcul_coor_x(way.nodes[i].lon);
-    points[i].y = calcul_coor_y(way.nodes[i].lat);
+  for (i = 0;i < way->count_nodes;i++) {
+    points[i].x = calcul_coor_x(way->nodes[i].lon);
+    points[i].y = calcul_coor_y(way->nodes[i].lat);
   }
   return points;
 }
@@ -16,8 +16,8 @@ void dessiner_trait_noeuds(my_node n1, my_node n2, SDL_Renderer *renderer){
   int y1 = calcul_coor_y(n1.lat);
   int x2 = calcul_coor_x(n2.lon);
   int y2 = calcul_coor_y(n2.lat);
-  if(DEBUG)
-    printf("x1 %d y1 %d x2 %d y2 %d\n", x1, y1, x2, y2);
+  //if(DEBUG)
+    //printf("x1 %d y1 %d x2 %d y2 %d\n", x1, y1, x2, y2);
   SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
 	SDL_RenderPresent(renderer);
 }
@@ -52,11 +52,22 @@ void dessiner_way(my_way way, SDL_Renderer *renderer){
     dessiner_trait_noeuds(way.nodes[i],way.nodes[i+1],renderer);
   }
 }
-
+/*
 void dessiner_way_bis(my_way way, SDL_Renderer *renderer){
   SDL_Point *pts = get_tab_point_nodes(way);
   SDL_RenderDrawLines(renderer,pts,way.count_nodes);
 	SDL_RenderPresent(renderer);
+}
+*/
+void dessiner_ways(my_way **ways, int count, SDL_Renderer *renderer){
+  int i;
+  //if( DEBUG )
+    //printf("nb %d\n",count );
+  for (i = 0; i < count-1; i++) {
+    SDL_Point *pts = get_tab_point_nodes(ways[i]);
+    SDL_RenderDrawLines(renderer,pts,ways[i]->count_nodes);
+    SDL_RenderPresent(renderer);
+  }
 }
 
 /*
