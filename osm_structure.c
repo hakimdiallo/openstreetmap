@@ -1,11 +1,12 @@
 #include "osm_structure.h"
-#include<stdlib.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 my_way* init_my_way(){
   my_way *way = NULL;
   way  = malloc(sizeof(my_way));
-  way->nodes = malloc(MY_NODE_SIZE*sizeof(my_node));
-  way->tag = malloc(MY_TAG_SIZE*sizeof(my_tag));
+  way->nodes = malloc(MY_NODE_SIZE * sizeof(my_node));
+  way->tag = malloc(MY_TAG_SIZE * sizeof(my_tag));
   way->count_nodes = 0;
   way->count_tag = 0;
   way->size_tag = MY_TAG_SIZE;
@@ -23,9 +24,9 @@ void add_tag_my_way(my_way *way,my_tag tag){
 }
 
 void add_node_my_way(my_way *way,my_node node){
-  if( (way->size_nodes) <= (way->count_nodes) ){
+  if( (way->size_nodes) == (way->count_nodes) ){
     way->size_nodes += MY_NODE_SIZE;
-    way->nodes = realloc(way,way->size_nodes*sizeof(my_node));
+    way->nodes = realloc(way->nodes,way->size_nodes*sizeof(my_node));
   }
   way->nodes[way->count_nodes] = node;
   (way->count_nodes)++;
@@ -41,15 +42,15 @@ my_node* init_my_node(){
   my_node *node = NULL;
   node = malloc(sizeof(my_node));
   node->tag=malloc(MY_TAG_SIZE*sizeof(my_tag));
-  node->count_tag=0;
-  node->size_tag=MY_TAG_SIZE;
+  node->count_tag = 0;
+  node->size_tag = MY_TAG_SIZE;
   return node;
 }
 
 void add_tag_my_node(my_node *node, my_tag tag){
-  if( (node->size_tag) <= (node->count_tag) ){
+  if( (node->size_tag) == (node->count_tag) ){
     node->size_tag += MY_TAG_SIZE;
-    node->tag = realloc(node,node->size_tag * sizeof(my_node));
+    node->tag = realloc(node->tag,node->size_tag * sizeof(my_tag));
   }
   node->tag[node->count_tag] = tag;
   (node->count_tag)++;
@@ -60,17 +61,17 @@ void free_my_node(my_node *node){
   free(node);
 }
 
-hashmap_my_node* init_hashmap(int startsize){
-  hashmap_my_node* hm = (hashmap_my_node*)malloc(sizeof(hashmap_my_node));
+my_hashmap_node* init_hashmap(int startsize){
+  my_hashmap_node* hm = (my_hashmap_node*)malloc(sizeof(my_hashmap_node));
   hm->table = (hashmap_entry*)calloc(sizeof(hashmap_entry), startsize);
   hm->size = startsize;
   hm->count = 0;
   return hm;
 }
 
-void add_node_hashmap(hashmap_my_node* hash, my_node *node, unsigned long id){
+void add_node_hashmap(my_hashmap_node* hash, my_node *node, unsigned long id){
   int index, i, step;
-  printf("boucle ajout");
+  printf("boucle ajout\n");
   do
   {
     index = id % hash->size;
@@ -99,7 +100,7 @@ void add_node_hashmap(hashmap_my_node* hash, my_node *node, unsigned long id){
   while (1);
 }
 
-my_node* get_hashmap_node(hashmap_my_node* hash, unsigned long id)
+my_node* get_hashmap_node(my_hashmap_node* hash, unsigned long id)
 {
   //Si l'hashmap contient un élément
   if (hash->count)
@@ -127,7 +128,7 @@ my_node* get_hashmap_node(hashmap_my_node* hash, unsigned long id)
   return 0;
 }
 
-void free_hashmap_node(hashmap_my_node* hash)
+void free_hashmap_node(my_hashmap_node* hash)
 {
   free(hash->table);
   free(hash);

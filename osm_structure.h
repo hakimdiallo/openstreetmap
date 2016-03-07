@@ -59,10 +59,10 @@ typedef struct hashmap_entry{
 } hashmap_entry;
 
 
-typedef struct hashmap_my_node{
+typedef struct my_hashmap_node{
 	hashmap_entry *table;
 	int size, count;
-} hashmap_my_node;
+} my_hashmap_node;
 
 //Innitialise la structure my_way
 my_way* init_my_way();
@@ -86,15 +86,15 @@ void free_my_node(my_node *node);
 void add_tag_my_node(my_node *node, my_tag tag);
 
 // initialise un hashmap avec une taille donnée
-hashmap_my_node* init_hashmap(int startsize);
+my_hashmap_node* init_hashmap(int startsize);
 
 //Ajoute un noeud dans l'hashmap
-void add_node_hashmap ( hashmap_my_node* hash, my_node *node, unsigned long id);
+void add_node_hashmap (my_hashmap_node* hash, my_node *node, unsigned long id);
 
 //Recupère le my_node qui a l'id entrée en paramètre
-my_node* get_hashmap_node(hashmap_my_node* hash, unsigned long id);
+my_node* get_hashmap_node(my_hashmap_node* hash, unsigned long id);
 
 //Libère la structure hashmap
-void free_hashmap_node(hashmap_my_node* hash);
+void free_hashmap_node(my_hashmap_node* hash);
 
 #endif
