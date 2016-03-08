@@ -85,6 +85,10 @@ void free_my_node(my_node *node);
 //ajoute un tag dans un node
 void add_tag_my_node(my_node *node, my_tag tag);
 
+//Libère un tableau de ways
+void free_my_ways(my_way **ways, int nombre_de_way);
+
+
 // initialise un hashmap avec une taille donnée
 my_hashmap_node* init_hashmap(int startsize);
 
@@ -96,5 +100,6 @@ my_node* get_hashmap_node(my_hashmap_node* hash, unsigned long id);
 
 //Libère la structure hashmap
 void free_hashmap_node(my_hashmap_node* hash);
+
 
 #endif

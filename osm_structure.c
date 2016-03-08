@@ -47,6 +47,13 @@ my_node* init_my_node(){
   return node;
 }
 
+void free_my_ways(my_way **ways, int n){
+  int i;
+  for (i=0 ; i<n; i++  ){
+    free_my_way(ways[i]);
+  }
+}
+
 void add_tag_my_node(my_node *node, my_tag tag){
   if( (node->size_tag) == (node->count_tag) ){
     node->size_tag += MY_TAG_SIZE;

@@ -1,5 +1,5 @@
 #include "osm.h"
-
+#include "hashmap.h"
 
 xmlDocPtr parse_file(char *name){
 	// Ouverture du document
@@ -127,17 +127,17 @@ void parcours_des_noeuds_fils(xmlNodePtr n, xmlXPathContextPtr ctxt, my_way **wa
 }
 
 //Parcours et stockage des noeuds dans une hashmap
-my_hashmap_node* stockage_nodes(xmlXPathContextPtr ctxt){
+hashmap* stockage_nodes(xmlXPathContextPtr ctxt){
   xmlXPathObjectPtr xpathRes = xmlXPathEvalExpression(BAD_CAST "/osm/node[@visible='true']", ctxt);
   if (xpathRes == NULL) {
     fprintf(stderr, " une Erreur sur l'expression XPath\n");
     exit(-1);
   }
-  my_hashmap_node *nodes = NULL;
+  hashmap *nodes = NULL;
   if (xpathRes->type == XPATH_NODESET) {
     //if(DEBUG)
       //printf("call init_hashmap\n");
-    nodes = init_hashmap(xpathRes->nodesetval->nodeNr);
+    nodes = hashmapCreate(xpathRes->nodesetval->nodeNr);
     if(nodes == NULL){
       fprintf(stderr, "Erreur à l'innitialisation de l'hashmap de nodes\n");
   	  exit(-1);
@@ -152,7 +152,7 @@ my_hashmap_node* stockage_nodes(xmlXPathContextPtr ctxt){
             exit(-1);
         }
         //printf("%d",i);
-        add_node_hashmap(nodes, node, node->at.id);
+        hashmapInsert(nodes, node, node->at.id);
     }
     //printf(" nbre noeud: %d",xpathRes->nodesetval->nodeNr);
     //return nodes;

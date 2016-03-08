@@ -9,6 +9,7 @@
 #include<SDL.h>
 #include <math.h>
 #include "osm_structure.h"
+#include "hashmap.h"
 
 #define DEBUG 0
 #define WIDTH 500
@@ -36,5 +37,5 @@ void parcours_attributs(xmlNodePtr noeud);
 int calcul_coor_y(double d);
 int calcul_coor_x(double d);
 my_tag getTagInformations(xmlNodePtr node);
-my_hashmap_node* stockage_nodes(xmlXPathContextPtr ctxt);
+hashmap *stockage_nodes(xmlXPathContextPtr ctxt);
 #endif

@@ -63,6 +63,7 @@ int main(int argc, char *argv[]){
       //SDL_RenderCopy(renderer, bitmapTex, NULL, NULL);
       //SDL_RenderPresent(renderer);
   }
+	free_my_ways(ways,  obj->nodesetval->nodeNr);
 	//my_hashmap_node* nodes=stockage_nodes(context);
 	//int i=0;
 	//printf(" valeur %s\n", get_hashmap_node(nodes, 1321042431) );
