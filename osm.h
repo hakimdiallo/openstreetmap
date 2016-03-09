@@ -29,7 +29,7 @@ void parcours_prefixe(xmlNodePtr noeud, fct_parcours_t f); // Parcours en profon
 xmlXPathContextPtr get_xpath_contexte(xmlDocPtr doc);
 xmlXPathObjectPtr getNode_by_xpathExpression(char *nodePath, xmlXPathContextPtr ctxt);
 my_way **xpath_parcours(xmlXPathObjectPtr xpathRes, xmlXPathContextPtr ctxt); // parcours un document xml par xpath
-void parcours_des_noeuds_fils(xmlNodePtr n, xmlXPathContextPtr ctxt, my_way **ways, int count);
+void parcours_des_noeuds_fils(xmlNodePtr n, xmlXPathContextPtr ctxt, my_way **ways, int count, hashmap *map);
 xmlNodePtr getNode_by_id(xmlChar *ref, xmlXPathContextPtr ctxt);
 my_node *getNodeInformations(xmlNodePtr noeud);
 my_bounds getBoundInformations(xmlXPathContextPtr ctxt); //

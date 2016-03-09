@@ -73,14 +73,14 @@ my_way **xpath_parcours(xmlXPathObjectPtr xpathRes, xmlXPathContextPtr ctxt){
   if (xpathRes->type == XPATH_NODESET) {
     //if(DEBUG)
       //printf("Starting...\n");
-
+    hashmap *map = stockage_nodes(ctxt);
     for (i = 0; i < xpathRes->nodesetval->nodeNr; i++) {
       xmlNodePtr n = xpathRes->nodesetval->nodeTab[i];
       xmlChar *visible = xmlGetProp(n,(const xmlChar *)"visible");
       //if(DEBUG)
         //printf("%s\n", visible );
       if( n->type == XML_ELEMENT_NODE && xmlStrEqual(visible,(const xmlChar *)"true") ){
-        parcours_des_noeuds_fils(n,ctxt,ways,i);
+        parcours_des_noeuds_fils(n,ctxt,ways,i,map);
       }
     }
     printf("fini\n");
@@ -90,7 +90,7 @@ my_way **xpath_parcours(xmlXPathObjectPtr xpathRes, xmlXPathContextPtr ctxt){
   return ways;
 }
 
-void parcours_des_noeuds_fils(xmlNodePtr n, xmlXPathContextPtr ctxt, my_way **ways, int i){
+void parcours_des_noeuds_fils(xmlNodePtr n, xmlXPathContextPtr ctxt, my_way **ways, int i, hashmap *map){
   //if(DEBUG)
     //printf("Parcours des noeuds fils\n");
   my_way *way = init_my_way();
@@ -102,13 +102,13 @@ void parcours_des_noeuds_fils(xmlNodePtr n, xmlXPathContextPtr ctxt, my_way **wa
   while( child != NULL ){
     if(xmlStrEqual(child->name,(const xmlChar *)"nd")){
         xmlChar *ref = xmlGetProp(child,(const xmlChar *)"ref");
-        xmlNodePtr noeud = getNode_by_id(ref,ctxt);
-        xmlChar *visible = xmlGetProp(noeud,(const xmlChar *)"visible");
-        if( xmlStrEqual(visible,(const xmlChar *)"true") ){
-          my_node *nd1 = getNodeInformations(noeud);
-          //my_node *nd1 = get_hashmap_node(nodes,(unsigned long)atoi((const char *)ref));
+        //xmlNodePtr noeud = getNode_by_id(ref,ctxt);
+        //xmlChar *visible = xmlGetProp(noeud,(const xmlChar *)"visible");
+        //if( xmlStrEqual(visible,(const xmlChar *)"true") ){
+          //my_node *nd1 = getNodeInformations(noeud);
+          my_node *nd1 = hashmapGet(map,atoi((char *)ref));
           add_node_my_way(way,*nd1);
-        }
+        //}
 
     }
     else {
@@ -272,3 +272,23 @@ int calcul_coor_x(double d){
   //}
   return (int)( WIDTH * ((d - bn.minlon)/(bn.maxlon - bn.minlon)) );
 }
+
+/*
+void parcours_arbre(xmlDocPtr doc){
+  xmlNodePtr racine = get_root(doc);
+  if( xmlStrEqual(racine->name,(const xmlChar *)"osm") ){
+    xmlNodePtr cur = racine->children;
+    while ( cur != NULL ) {
+      if( xmlStrEqual(cur->name,(const xmlChar *)"bounds") ){
+
+      }
+      else if( xmlStrEqual(cur->name,(const xmlChar *)"node") ){
+
+      }
+      else if( xmlStrEqual(cur->name,(const xmlChar *)"way") ){
+
+      }
+    }
+  }
+}
+*/
