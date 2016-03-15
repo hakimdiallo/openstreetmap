@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <SDL.h>
+#include <SDL2_gfxPrimitives.h>
 #include "osm.h"
 #include "osm_structure.h"
 
@@ -11,6 +12,7 @@ void dessiner_trait_noeuds(my_node n1, my_node n2, SDL_Renderer *renderer);
 void dessiner_way(my_way way, SDL_Renderer *renderer);
 void dessiner_way_bis(my_way way, SDL_Renderer *renderer);
 void dessiner_ways(my_way **ways, int count, SDL_Renderer *renderer);
+void dessiner_ways_bis(my_way **ways, int count, SDL_Renderer *renderer);
 
 #endif
 /*

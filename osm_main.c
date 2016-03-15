@@ -49,8 +49,11 @@ int main(int argc, char *argv[]){
   //SDL_FreeSurface(bitmapSurface);
 	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
   //SDL_RenderDrawLine(renderer, 0, 0, 200, 500);
+	//short s[5] = { 400, 450, 450, 425, 300 };
+  //short t[5] = { 400, 410, 450, 425, 500};
+  //filledPolygonRGBA(renderer, s, t, 5, 255, 0, 255, 155);
 	//SDL_RenderPresent(renderer);
-	dessiner_ways(ways,obj->nodesetval->nodeNr,renderer);
+	dessiner_ways_bis(ways,obj->nodesetval->nodeNr,renderer);
   while (1) {
       SDL_Event e;
       if (SDL_PollEvent(&e)) {

@@ -12,9 +12,10 @@
 #include "hashmap.h"
 
 #define DEBUG 0
-#define WIDTH 500
+#define WIDTH 900
 #define HEIGHT 600
 #define CIRC_TERRE 40075.00
+#define RAYON_TERRE 6371.00
 
 
 typedef void (*fct_parcours_t)(xmlNodePtr);//pointeur sur une fonction qui retourne un type int

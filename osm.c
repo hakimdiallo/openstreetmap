@@ -195,8 +195,8 @@ my_node *getNodeInformations(xmlNodePtr noeud){
     //printf("Lon: %s\n", lon);
     //printf("Lat: %s\n", lat);
   //}
-  n->lat = CIRC_TERRE*cos(strtod((const char *)lat,NULL));
-  n->lon = CIRC_TERRE*cos(strtod((const char *)lon,NULL));
+  n->lat = RAYON_TERRE*sin(strtod((const char *)lat,NULL)) * sqrt(2);
+  n->lon = (RAYON_TERRE*M_PI*strtod((const char *)lon,NULL))/(180 * sqrt(2));
   //if(DEBUG){
     //printf("lat %f\n",n->lat );
     //printf("Done...\n");
@@ -224,10 +224,10 @@ my_bounds getBoundInformations(xmlXPathContextPtr ctxt){
   xmlChar *minlon = xmlGetProp(noeud,(const xmlChar *)"minlon");
   xmlChar *maxlat = xmlGetProp(noeud,(const xmlChar *)"maxlat");
   xmlChar *maxlon = xmlGetProp(noeud,(const xmlChar *)"maxlon");
-  b.maxlat = CIRC_TERRE*cos(strtod((const char *)maxlat,NULL));
-  b.minlat = CIRC_TERRE*cos(strtod((const char *)minlat,NULL));
-  b.maxlon = CIRC_TERRE*cos(strtod((const char *)maxlon,NULL));
-  b.minlon = CIRC_TERRE*cos(strtod((const char *)minlon,NULL));
+  b.maxlat = RAYON_TERRE*sin(strtod((const char *)maxlat,NULL)) * sqrt(2);
+  b.minlat = RAYON_TERRE*sin(strtod((const char *)minlat,NULL)) * sqrt(2);
+  b.maxlon = (RAYON_TERRE*M_PI*strtod((const char *)maxlon,NULL))/(180 * sqrt(2));
+  b.minlon = (RAYON_TERRE*M_PI*strtod((const char *)minlon,NULL))/(180 * sqrt(2));
 
   xmlXPathFreeObject(node);
   return b;

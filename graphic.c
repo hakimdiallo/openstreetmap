@@ -11,6 +11,24 @@ SDL_Point *get_tab_point_nodes(my_way *way){
   return points;
 }
 
+short *get_tab_x(my_way *way){
+  int i;
+  short *tab = malloc(sizeof(short)* way->count_nodes);
+  for (i = 0;i < way->count_nodes;i++) {
+    tab[i] = (short)calcul_coor_x(way->nodes[i].lon);
+  }
+  return tab;
+}
+
+short *get_tab_y(my_way *way){
+  int i;
+  short *tab = malloc(sizeof(short)* way->count_nodes);
+  for (i = 0;i < way->count_nodes;i++) {
+    tab[i] = (short)calcul_coor_y(way->nodes[i].lat);
+  }
+  return tab;
+}
+
 void dessiner_trait_noeuds(my_node n1, my_node n2, SDL_Renderer *renderer){
   int x1 = calcul_coor_x(n1.lon);
   int y1 = calcul_coor_y(n1.lat);
@@ -63,9 +81,23 @@ void dessiner_ways(my_way **ways, int count, SDL_Renderer *renderer){
   int i;
   //if( DEBUG )
     //printf("nb %d\n",count );
-  for (i = 0; i < count-1; i++) {
+  for (i = 0; i < count; i++) {
     SDL_Point *pts = get_tab_point_nodes(ways[i]);
     SDL_RenderDrawLines(renderer,pts,ways[i]->count_nodes);
+    SDL_RenderPresent(renderer);
+  }
+}
+
+void dessiner_ways_bis(my_way **ways, int count, SDL_Renderer *renderer){
+  int i;
+  //if( DEBUG )
+    //printf("nb %d\n",count );
+  for (i = 0; i < count; i++) {
+    //int r=rand()%255,g=rand()%255,b=rand()%255;
+
+    short *tab_x = get_tab_x(ways[i]);
+    short *tab_y = get_tab_y(ways[i]);
+    polygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 255, 0, 0, 255);
     SDL_RenderPresent(renderer);
   }
 }
