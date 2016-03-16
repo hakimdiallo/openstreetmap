@@ -88,20 +88,59 @@ void dessiner_ways(my_way **ways, int count, SDL_Renderer *renderer){
   }
 }
 
+void draw_line_with_width(SDL_Renderer *renderer, my_way *way, uint8_t w){
+  int i;
+  for (i = 0; i < way->count_nodes-1; i++) {
+    short x1 = (short)calcul_coor_x(way->nodes[i].lon);
+    short y1 = (short)calcul_coor_y(way->nodes[i].lat);
+    short x2 = (short)calcul_coor_x(way->nodes[i+1].lon);
+    short y2 = (short)calcul_coor_y(way->nodes[i+1].lat);
+    thickLineRGBA(renderer,x1,y1,x2,y2,w,255,255,255,255);
+  }
+}
+
 void dessiner_ways_bis(my_way **ways, int count, SDL_Renderer *renderer){
   int i;
   //if( DEBUG )
     //printf("nb %d\n",count );
   for (i = 0; i < count; i++) {
-    //int r=rand()%255,g=rand()%255,b=rand()%255;
-
-    short *tab_x = get_tab_x(ways[i]);
-    short *tab_y = get_tab_y(ways[i]);
-    polygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 255, 0, 0, 255);
+    char *v = parcours_tag(ways[i]->tag, ways[i]->size_tag);
+    if ( v != NULL ) {
+      printf("%s\n",v);
+      if(!strcmp(v,"motorway")){
+        draw_line_with_width(renderer,ways[i],70);
+      }
+      else if(!strcmp(v,"road")){
+        draw_line_with_width(renderer,ways[i],30);
+      }
+      else if(!strcmp(v,"pedestrian")){
+        draw_line_with_width(renderer,ways[i],2);
+      }else{
+        //short *tab_x = get_tab_x(ways[i]);
+        //short *tab_y = get_tab_y(ways[i]);
+        draw_line_with_width(renderer,ways[i],7);
+      }
+    }
+    else{
+      short *tab_x = get_tab_x(ways[i]);
+      short *tab_y = get_tab_y(ways[i]);
+      polygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 100, 0, 0, 255);
+    }
     SDL_RenderPresent(renderer);
   }
 }
 
+char *parcours_tag(my_tag *tag, int size){
+  int i;
+  char *val = NULL;
+  for (i = 0; i < size; i++) {
+    if(!strcmp(tag[i].key,"highway")){
+      val = strdup(tag[i].value);
+      return val;
+    }
+  }
+  return val;
+}
 /*
 void draw_fenetre(SDL_Surface **ecran,int x,int y,char title[] ){
     if (SDL_Init(SDL_INIT_VIDEO) < 0)

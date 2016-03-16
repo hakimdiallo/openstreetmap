@@ -13,6 +13,7 @@ void dessiner_way(my_way way, SDL_Renderer *renderer);
 void dessiner_way_bis(my_way way, SDL_Renderer *renderer);
 void dessiner_ways(my_way **ways, int count, SDL_Renderer *renderer);
 void dessiner_ways_bis(my_way **ways, int count, SDL_Renderer *renderer);
+char *parcours_tag(my_tag *tag, int size);
 
 #endif
 /*
