@@ -12,7 +12,7 @@
 #include "hashmap.h"
 
 #define DEBUG 0
-#define WIDTH 900
+#define WIDTH 1000
 #define HEIGHT 650
 #define CIRC_TERRE 40075.00
 #define RAYON_TERRE 6371.00

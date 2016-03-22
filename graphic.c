@@ -88,15 +88,21 @@ void dessiner_ways(my_way **ways, int count, SDL_Renderer *renderer){
   }
 }
 
-void draw_line_with_width(SDL_Renderer *renderer, my_way *way, uint8_t w){
+void draw_line_with_width(SDL_Renderer *renderer, my_way *way, uint8_t w, uint8_t r, uint8_t g, uint8_t b){
   int i;
   for (i = 0; i < way->count_nodes-1; i++) {
     short x1 = (short)calcul_coor_x(way->nodes[i].lon);
     short y1 = (short)calcul_coor_y(way->nodes[i].lat);
     short x2 = (short)calcul_coor_x(way->nodes[i+1].lon);
     short y2 = (short)calcul_coor_y(way->nodes[i+1].lat);
-    thickLineRGBA(renderer,x1,y1,x2,y2,w,255,255,255,255);
+    thickLineRGBA(renderer,x1,y1,x2,y2,w,r,g,b,255);
   }
+}
+
+void draw_line_points(SDL_Renderer *renderer, my_way *way, uint8_t r, uint8_t g, uint8_t b){
+  SDL_Point *pts = get_tab_point_nodes(way);
+  SDL_SetRenderDrawColor(renderer,r,g,b,255);
+  SDL_RenderDrawPoints(renderer,pts,way->count_nodes);
 }
 
 void dessiner_ways_bis(my_way **ways, int count, SDL_Renderer *renderer){
@@ -104,30 +110,186 @@ void dessiner_ways_bis(my_way **ways, int count, SDL_Renderer *renderer){
   //if( DEBUG )
     //printf("nb %d\n",count );
   for (i = 0; i < count; i++) {
-    char *v = parcours_tag(ways[i]->tag, ways[i]->size_tag);
-    if ( v != NULL ) {
-      printf("%s\n",v);
-      if(!strcmp(v,"motorway")){
-        draw_line_with_width(renderer,ways[i],70);
-      }
-      else if(!strcmp(v,"road")){
-        draw_line_with_width(renderer,ways[i],30);
-      }
-      else if(!strcmp(v,"pedestrian")){
-        draw_line_with_width(renderer,ways[i],2);
-      }else{
-        //short *tab_x = get_tab_x(ways[i]);
-        //short *tab_y = get_tab_y(ways[i]);
-        draw_line_with_width(renderer,ways[i],7);
+    //char *v = parcours_tag(ways[i]->tag, ways[i]->count_tag);
+    if(ways[i]->count_tag > 0){
+      int j;
+      for (j = 0; j < ways[i]->count_tag; j++) {
+        char *v = NULL;
+        if(!strcmp(ways[i]->tag[j].key,"highway")){
+          v = strdup(ways[i]->tag[j].value);
+          if(!strcmp(v,"motorway")){
+            draw_line_with_width(renderer,ways[i],18,233,144,160);
+          }
+          else if(!strcmp(v,"trunk")){
+            draw_line_with_width(renderer,ways[i],18,251,178,154);
+          }
+          else if(!strcmp(v,"primary") || !strcmp(v,"primary_link")){
+            draw_line_with_width(renderer,ways[i],15,236,152,154);
+          }
+          else if(!strcmp(v,"secondary") || !strcmp(v,"secondary_link")){
+            draw_line_with_width(renderer,ways[i],15,254,215,165);
+          }
+          else if(!strcmp(v,"tertiary") || !strcmp(v,"tertiary_link")){
+            draw_line_with_width(renderer,ways[i],15,255,255,179);
+            //draw_line_with_width(renderer,ways[i],15,0,254,254);
+          }
+          else if(!strcmp(v,"unclassified")){
+            draw_line_with_width(renderer,ways[i],10,254,254,254);
+          }
+          else if(!strcmp(v,"residential")){
+            draw_line_with_width(renderer,ways[i],10,254,254,254);
+          }
+          else if(!strcmp(v,"service")){
+            draw_line_with_width(renderer,ways[i],7,254,254,254);
+          }
+          else if(!strcmp(v,"pedestrian")){
+            draw_line_with_width(renderer,ways[i],5,237,237,237);
+          }
+          else if(!strcmp(v,"footway") || !strcmp(v,"path")){
+            draw_line_with_width(renderer,ways[i],2,248,147,136);
+          }
+          else if(!strcmp(v,"motorway_link")){
+            draw_line_with_width(renderer,ways[i],10,233,144,160);
+          }
+          else if(!strcmp(v,"trunk_link")){
+            draw_line_with_width(renderer,ways[i],15,251,178,154);
+          }
+          else if(!strcmp(v,"living_street")){
+            draw_line_with_width(renderer,ways[i],15,237,237,237);
+          }
+          else if(!strcmp(v,"track")){
+            draw_line_with_width(renderer,ways[i],2,172,131,39);
+          }
+          else if(!strcmp(v,"bus_guideway")){
+            draw_line_with_width(renderer,ways[i],4,100,100,255);
+          }
+          else if(!strcmp(v,"raceway")){
+            draw_line_with_width(renderer,ways[i],7,255,192,202);
+          }
+          else if(!strcmp(v,"road")){
+            draw_line_with_width(renderer,ways[i],2,221,221,221);
+          }
+          else if(!strcmp(v,"bridleway")){
+            draw_line_with_width(renderer,ways[i],2,73,161,72);
+          }
+          else if(!strcmp(v,"steps")){
+            draw_line_with_width(renderer,ways[i],5,252,119,102);
+          }
+          else if(!strcmp(v,"cycleway")){
+            draw_line_with_width(renderer,ways[i],2,155,154,245);
+          }
+          else{
+            printf("highway: %s\n",v );
+          }
+        }
+        else if(!strcmp(ways[i]->tag[j].key,"building")){
+          v = strdup(ways[i]->tag[j].key);
+          if(!strcmp(v,"building")){
+            short *tab_x = get_tab_x(ways[i]);
+            short *tab_y = get_tab_y(ways[i]);
+            filledPolygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 191, 174, 174, 255);
+            //polygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 168, 146, 162, 255);
+          }
+        }
+        else if(!strcmp(ways[i]->tag[j].key,"waterway")){
+          v = strdup(ways[i]->tag[j].value);
+          if(!strcmp(v,"river")){
+            draw_line_with_width(renderer,ways[i],10,180,190,209);
+          }
+          else if(!strcmp(v,"riverbank")){
+            short *tab_x = get_tab_x(ways[i]);
+            short *tab_y = get_tab_y(ways[i]);
+            //filledPolygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 181,208,208, 255);
+            //draw_line_with_width(renderer,ways[i],50,180,208,209);
+          }
+          else if(!strcmp(v,"stream")){
+            draw_line_with_width(renderer,ways[i],2,180,208,209);
+          }
+        }
+        else if(!strcmp(ways[i]->tag[j].key,"natural")){
+          v = strdup(ways[i]->tag[j].value);
+          if(!strcmp(v,"water")){
+            short *tab_x = get_tab_x(ways[i]);
+            short *tab_y = get_tab_y(ways[i]);
+            filledPolygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 180, 208, 209, 255);
+          }
+          else if(!strcmp(v,"coastline")){
+            //short *tab_x = get_tab_x(ways[i]);
+            //short *tab_y = get_tab_y(ways[i]);
+            //filledPolygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 180, 208, 209, 255);
+          }
+        }
+        else if(!strcmp(ways[i]->tag[j].key,"landuse") || !strcmp(ways[i]->tag[j].key,"leisure")){
+          v = strdup(ways[i]->tag[j].value);
+          if(!strcmp(v,"grass")){
+            short *tab_x = get_tab_x(ways[i]);
+            short *tab_y = get_tab_y(ways[i]);
+            filledPolygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 207, 237, 165, 255);
+          }
+          else if(!strcmp(v,"forest")){
+            short *tab_x = get_tab_x(ways[i]);
+            short *tab_y = get_tab_y(ways[i]);
+            filledPolygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 157, 202, 138, 255);
+          }
+          else if(!strcmp(v,"park")){
+            short *tab_x = get_tab_x(ways[i]);
+            short *tab_y = get_tab_y(ways[i]);
+            filledPolygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 205, 247, 201, 255);
+          }
+          else if(!strcmp(v,"garden")){
+            short *tab_x = get_tab_x(ways[i]);
+            short *tab_y = get_tab_y(ways[i]);
+            filledPolygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 207, 236, 168, 255);
+          }
+          else if(!strcmp(v,"pitch")){
+            short *tab_x = get_tab_x(ways[i]);
+            short *tab_y = get_tab_y(ways[i]);
+            filledPolygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 138, 211, 175, 255);
+          }
+        }
+        else if(!strcmp(ways[i]->tag[j].key,"area")){
+          v = strdup(ways[i]->tag[j].value);
+          if(!strcmp(v,"yes")){
+            short *tab_x = get_tab_x(ways[i]);
+            short *tab_y = get_tab_y(ways[i]);
+            filledPolygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 237, 237, 237, 255);
+          }else{
+            printf("%s\n",ways[i]->tag[j].value);
+          }
+        }
+        else if(!strcmp(ways[i]->tag[j].key,"barrier")){
+          v = strdup(ways[i]->tag[j].value);
+          if(!strcmp(v,"fence")){
+            //short *tab_x = get_tab_x(ways[i]);
+            //short *tab_y = get_tab_y(ways[i]);
+            //polygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 173,171,168, 255);
+            draw_line_with_width(renderer,ways[i],1,173,171,168);
+          }
+        }
+        else if(!strcmp(ways[i]->tag[j].key,"source")){
+          //v = strdup(ways[i]->tag[j].value);
+            if (ways[i]->count_tag == 1) {
+              short *tab_x = get_tab_x(ways[i]);
+              short *tab_y = get_tab_y(ways[i]);
+              filledPolygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 221, 221, 221, 255);
+            }
+            draw_line_with_width(renderer,ways[i],1,168, 146, 162);
+        }
+
+        else{
+          //printf("%s - %s\n",ways[i]->tag[j].key,ways[i]->tag[j].value);
+        }
       }
     }
     else{
       short *tab_x = get_tab_x(ways[i]);
       short *tab_y = get_tab_y(ways[i]);
-      polygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 100, 0, 0, 255);
+      //filledPolygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 191, 174, 174, 255);
+      filledPolygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 221, 221, 221, 255);
     }
-    SDL_RenderPresent(renderer);
+
   }
+  SDL_RenderPresent(renderer);
 }
 
 char *parcours_tag(my_tag *tag, int size){
@@ -138,246 +300,29 @@ char *parcours_tag(my_tag *tag, int size){
       val = strdup(tag[i].value);
       return val;
     }
+    else if(!strcmp(tag[i].key,"building")){
+      val = strdup(tag[i].key);
+      return val;
+    }
+    else if(!strcmp(tag[i].key,"waterway")){
+      val = strdup(tag[i].value);
+      return val;
+    }
+    else if(!strcmp(tag[i].key,"natural")){
+      val = strdup(tag[i].value);
+      return val;
+    }
+    else if(!strcmp(tag[i].key,"landuse") || !strcmp(tag[i].key,"leisure")){
+      val = strdup(tag[i].value);
+      return val;
+    }
+    else if(!strcmp(tag[i].key,"area")){
+      val = strdup(tag[i].value);
+      return val;
+    }
+    else{
+      //printf("%s - %s\n", tag[i].key, tag[i].value);
+    }
   }
   return val;
 }
-/*
-void draw_fenetre(SDL_Surface **ecran,int x,int y,char title[] ){
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
-    {
-      fprintf(stderr, "Erreur d'initialisation de la SDL");
-      exit(EXIT_FAILURE);
-    }
-    //Termine le programme en appelant la fonction SDL_Quit
-    atexit(SDL_Quit);
-    *ecran=SDL_SetVideoMode(x, y, 32, SDL_HWSURFACE); // Ouverture de la fenêtre
-    if(ecran==NULL){// Initialisation de la SDL
-      fprintf(stderr, "Impossible de charger le mode vidéo : %s\n", SDL_GetError());
-      exit(EXIT_FAILURE);
-    }
-
-    SDL_WM_SetCaption(title, NULL);
-}
-
-//Attend que l'utilisateur appuie sur une touche ou la croix rouge
-void attendreTouche(void)
-{
-  SDL_Event event;
-
-  do
-    SDL_WaitEvent(&event);
-  while (event.type != SDL_QUIT && event.type != SDL_KEYDOWN);
-}
-
-//Remplit entièrement l'écran de la couleur choisit
-void effacerEcran(SDL_Surface *ecran,Uint32 coul)
-{
-  //La valeur NULL permet de remplir tout l'écran
-  SDL_FillRect(ecran, NULL, coul);
-}
-
-//mise à jour de l'écran entier
-void actualiser(SDL_Surface *ecran)
-{
-  SDL_UpdateRect(ecran, 0, 0, 0, 0);
-}
-
-//déssine un pixel sur le point de coordonnées x,y sur la fenêtre
-void setPixel(SDL_Surface *ecran,int x, int y, Uint32 coul)
-{
-  *((Uint32*)(ecran->pixels) + x + y * ecran->w) = coul;
-}
-
-//déssine un pixel sur le point de coordonnées x,y sur la fenêtre et ne fait rien
-// si les coordonnées dépasse les limites de la fenêtre
-void setPixelVerif(SDL_Surface *ecran,int x, int y, Uint32 coul)
-{
-  if (x >= 0 && x < ecran->w &&
-      y >= 0 && y < ecran->h)
-    setPixel(ecran,x, y, coul);
-}
-
-
-//Déssine un rectangle plein
-//les paramètres sont les coordonnées du point supérieur gauche(x,y), la largeur w, la hauteur h et le code couleur.
-void barre(SDL_Surface *ecran,int x, int y, int w, int h, Uint32 coul)
-{
-  SDL_Rect r;
-
-  r.x = x;
-  r.y = y;
-  r.w = w;
-  r.h = h;
-
-  SDL_FillRect(ecran, &r, coul);
-}
-
-
-
-//Déssine une ligne horizontale
-//les paramètres sont les coordonnées du point supérieur gauche(x,y), la largeur w et le code couleur.
-void ligneHorizontale(SDL_Surface *ecran,int x, int y, int w, Uint32 coul)
-{
-  SDL_Rect r;
-
-  r.x = x;
-  r.y = y;
-  r.w = w;
-  r.h = 1;
-
-  SDL_FillRect(ecran, &r, coul);
-}
-
-
-//Déssine une ligne verticale
-//les paramètres sont les coordonnées du point supérieur gauche(x,y), la hauteur h et le code couleur.
-void ligneVerticale(SDL_Surface *ecran,int x, int y, int h, Uint32 coul)
-{
-  SDL_Rect r;
-
-  r.x = x;
-  r.y = y;
-  r.w = 1;
-  r.h = h;
-
-  SDL_FillRect(ecran, &r, coul);
-}
-
-
-//Déssine un rectangle vide
-void rectangle(SDL_Surface *ecran,int x, int y, int w, int h, Uint32 coul)
-{
-  ligneHorizontale(ecran,x, y, w, coul);
-  ligneHorizontale(ecran,x, y + h - 1, w, coul);
-  ligneVerticale(ecran,x, y + 1, h - 2, coul);
-  ligneVerticale(ecran,x + w - 1, y + 1, h - 2, coul);
-}
-//Dessine une ligne quelconques
-//(x1,y1) le point de départ et (x2,y2) le point d'arrivée
-void echangerEntiers(int* x, int* y)
-{
-  int t = *x;
-  *x = *y;
-  *y = t;
-}
-
-void ligne(SDL_Surface *ecran,int x1, int y1, int x2, int y2, Uint32 coul)
-{
-  int d, dx, dy, aincr, bincr, xincr, yincr, x, y;
-
-  if (abs(x2 - x1) < abs(y2 - y1)) {
-    // parcours par l'axe vertical
-
-    if (y1 > y2) {
-      echangerEntiers(&x1, &x2);
-      echangerEntiers(&y1, &y2);
-    }
-
-    xincr = x2 > x1 ? 1 : -1;
-    dy = y2 - y1;
-    dx = abs(x2 - x1);
-    d = 2 * dx - dy;
-    aincr = 2 * (dx - dy);
-    bincr = 2 * dx;
-    x = x1;
-    y = y1;
-
-    setPixelVerif(ecran,x, y, coul);
-
-    for (y = y1+1; y <= y2; ++y) {
-      if (d >= 0) {
-	x += xincr;
-	d += aincr;
-      } else
-	d += bincr;
-
-      setPixelVerif(ecran,x, y, coul);
-    }
-
-  } else {
-    // parcours par l'axe horizontal
-
-    if (x1 > x2) {
-      echangerEntiers(&x1, &x2);
-      echangerEntiers(&y1, &y2);
-    }
-
-    yincr = y2 > y1 ? 1 : -1;
-    dx = x2 - x1;
-    dy = abs(y2 - y1);
-    d = 2 * dy - dx;
-    aincr = 2 * (dy - dx);
-    bincr = 2 * dy;
-    x = x1;
-    y = y1;
-
-    setPixelVerif(ecran,x, y, coul);
-
-    for (x = x1+1; x <= x2; ++x) {
-      if (d >= 0) {
-	y += yincr;
-	d += aincr;
-      } else
-	d += bincr;
-
-      setPixelVerif(ecran,x, y, coul);
-    }
-  }
-}
-
-//Déssine un cercle vide avec comme centre (cx,cy) et un rayon de  (rayon)
-void cercle(SDL_Surface *ecran,int cx, int cy, int rayon, Uint32 coul)
-{
-  int d, y, x;
-
-  d = 3 - (2 * rayon);
-  x = 0;
-  y = rayon;
-
-  while (y >= x) {
-    setPixelVerif(ecran,cx + x, cy + y, coul);
-    setPixelVerif(ecran,cx + y, cy + x, coul);
-    setPixelVerif(ecran,cx - x, cy + y, coul);
-    setPixelVerif(ecran,cx - y, cy + x, coul);
-    setPixelVerif(ecran,cx + x, cy - y, coul);
-    setPixelVerif(ecran,cx + y, cy - x, coul);
-    setPixelVerif(ecran,cx - x, cy - y, coul);
-    setPixelVerif(ecran,cx - y, cy - x, coul);
-
-    if (d < 0)
-      d = d + (4 * x) + 6;
-    else {
-      d = d + 4 * (x - y) + 10;
-      y--;
-    }
-
-    x++;
-  }
-}
-
-//Déssine un cercle plein de couleur (coul) avec pour centre cx,cy et pour rayon (rayon)
-void disque(SDL_Surface *ecran,int cx, int cy, int rayon, Uint32 coul)
-{
-  int d, y, x;
-
-  d = 3 - (2 * rayon);
-  x = 0;
-  y = rayon;
-
-  while (y >= x) {
-    ligneHorizontale(ecran,cx - x, cy - y, 2 * x + 1, coul);
-    ligneHorizontale(ecran,cx - x, cy + y, 2 * x + 1, coul);
-    ligneHorizontale(ecran,cx - y, cy - x, 2 * y + 1, coul);
-    ligneHorizontale(ecran,cx - y, cy + x, 2 * y + 1, coul);
-
-    if (d < 0)
-      d = d + (4 * x) + 6;
-    else {
-      d = d + 4 * (x - y) + 10;
-      y--;
-    }
-
-    x++;
-  }
-}
-*/
