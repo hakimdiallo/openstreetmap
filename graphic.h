@@ -7,13 +7,8 @@
 #include "osm.h"
 #include "osm_structure.h"
 
-void afficher(xmlNodePtr noeud);
-void dessiner_trait_noeuds(my_node n1, my_node n2, SDL_Renderer *renderer);
-void dessiner_way(my_way way, SDL_Renderer *renderer);
-void dessiner_way_bis(my_way way, SDL_Renderer *renderer);
-void dessiner_ways(my_way **ways, int count, SDL_Renderer *renderer);
-void dessiner_ways_bis(my_way **ways, int count, SDL_Renderer *renderer);
-char *parcours_tag(my_tag *tag, int size);
+  void draw_line_with_width(SDL_Renderer *renderer, my_way *way, GHashTable *nodes, uint8_t w, uint8_t r, uint8_t g, uint8_t b);
+  void dessiner_ways(SDL_Renderer *renderer, GHashTable *ways, GHashTable *nodes);
 
 #endif
 /*
