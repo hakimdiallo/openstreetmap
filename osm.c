@@ -3,14 +3,14 @@
 int calcul_coor_x(double d, my_bounds *bn);
 int calcul_coor_y(double d, my_bounds *bn);
 
-void parcours_largeur(GHashTable *ways, GHashTable *nodes, my_bounds *bound, xmlNodePtr noeud, fct_parcours_t f){
+void parcours_largeur(GHashTable *relations, GHashTable *ways, GHashTable *nodes, my_bounds *bound, xmlNodePtr noeud, fct_parcours_t f){
     xmlNodePtr n;
     for (n = noeud; n != NULL; n = n->next) {
-      f(ways, nodes, bound, n);
+      f(relations, ways, nodes, bound, n);
     }
 }
 
-void stockageNoeudsOSM(GHashTable *ways, GHashTable *nodes, my_bounds *bound, xmlNodePtr noeud){
+void stockageNoeudsOSM(GHashTable *relations, GHashTable *ways, GHashTable *nodes, my_bounds *bound, xmlNodePtr noeud){
   if (noeud->type == XML_ELEMENT_NODE) {
     //xmlChar *chemin = xmlGetNodePath(noeud);
     if(xmlStrEqual(noeud->name, BAD_CAST "way")){
@@ -22,15 +22,13 @@ void stockageNoeudsOSM(GHashTable *ways, GHashTable *nodes, my_bounds *bound, xm
     else if (xmlStrEqual(noeud->name, BAD_CAST "bounds")){
       setBoundInformations(bound, noeud);
     }
-    else {
-      printf("relation\n" );
-      //setRelationInformation(ways,noeud);
+    else if (xmlStrEqual(noeud->name, BAD_CAST "relation")){
+      setRelationInformations(relations, noeud);
     }
-
   }
 }
 
-void parse_file_v(GHashTable *ways, GHashTable *nodes, my_bounds *bound, char *name){
+void parse_file_v(GHashTable *relations, GHashTable *ways, GHashTable *nodes, my_bounds *bound, char *name){
   xmlDocPtr doc;
   xmlNodePtr noeud;
 
@@ -54,7 +52,7 @@ void parse_file_v(GHashTable *ways, GHashTable *nodes, my_bounds *bound, char *n
     return ;
   }
   //parcour du fichier
-  parcours_largeur(ways, nodes, bound, noeud->children, stockageNoeudsOSM);
+  parcours_largeur(relations, ways, nodes, bound, noeud->children, stockageNoeudsOSM);
   xmlFreeDoc(doc);
 }
 
@@ -114,6 +112,33 @@ void setBoundInformations(my_bounds *bound, xmlNodePtr noeud){
   bound->minlat = RAYON_TERRE*sin(strtod((const char *)minlat,NULL)) * sqrt(2);
   bound->maxlon = (RAYON_TERRE*M_PI*strtod((const char *)maxlon,NULL))/(180 * sqrt(2));
   bound->minlon = (RAYON_TERRE*M_PI*strtod((const char *)minlon,NULL))/(180 * sqrt(2));
+}
+
+void setRelationInformations(GHashTable *relations, xmlNodePtr noeud){
+  my_relation *rel = init_my_relation();
+  char *id = (char *)xmlGetProp(noeud, BAD_CAST "id");
+  xmlNodePtr child = noeud->children;
+  while ( child != NULL ) {
+    if( xmlStrEqual(child->name, BAD_CAST "member") ){
+      xmlChar *member = xmlGetProp(child, BAD_CAST "type");
+      xmlChar *ref = xmlGetProp(child, BAD_CAST "ref");
+      if( xmlStrEqual(member, BAD_CAST "way") ) {
+        add_way_to_relation(rel,(char *)ref);
+      }
+      else if( xmlStrEqual(member, BAD_CAST "node") ) {
+        add_node_to_relation(rel,(char *)ref);
+      }
+      else if( xmlStrEqual(member, BAD_CAST "relation") ) {
+        add_relation_to_relation(rel,(char *)ref);
+      }
+    }
+    else{
+      my_tag *tag = getTagInformations(child);
+      add_tag_to_relation(rel,tag);
+    }
+    child = child->next;
+  }
+  g_hash_table_insert(relations, &id, rel);
 }
 
 //Calcule les coordonnées y sur la fenêtre
