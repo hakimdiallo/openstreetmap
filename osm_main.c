@@ -16,10 +16,12 @@ int main(int argc, char *argv[]){
 	my_bounds *bound;
 	GHashTable *ways;
 	GHashTable *nodes;
+	GHashTable *relations;
+	relations = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);
 	nodes = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);//initialisation de l'hashtable des nodes
-	ways = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);;//initialisation de l'hashtable des ways
+	ways = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);//initialisation de l'hashtable des ways
 	bound = init_my_bounds();
-	parse_file_v(ways, nodes, bound, argv[1]);
+	parse_file_v(relations, ways, nodes, bound, argv[1]);
 	SDL_Window *win = NULL;
   SDL_Renderer *renderer = NULL;
   //SDL_Texture *bitmapTex = NULL;
