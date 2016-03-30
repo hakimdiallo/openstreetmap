@@ -44,7 +44,8 @@ typedef struct my_relation{
 	my_attributs at;
 	GSList *ways;
 	GSList *nodes;
-	GSList *relation;
+	GSList *relations;
+	GHashTable *tags;
 }my_relation;
 
 typedef struct my_area {
@@ -67,6 +68,8 @@ my_node* init_my_node();
 //Initialise un bound
 my_bounds* init_my_bounds();
 
+my_relation* init_my_relation();
+
 //ajoute un tag dans un way
 void add_tag_my_way(my_way *way,my_tag *tag);
 
@@ -75,6 +78,18 @@ void add_node_my_way(my_way *way, char *idNode);
 
 //ajoute un tag dans un node
 void add_tag_my_node(my_node *node, my_tag *tag);
+
+//
+void add_way_to_relation(my_relation *rel, char *idWay);
+
+//
+void add_node_to_relation(my_relation *rel, char *idNode);
+
+//
+void add_tag_to_relation(my_relation *rel, my_tag *tag);
+
+//
+void add_relation_to_relation(my_relation *rel, char *idRel);
 
 //détruit la structure my_way
 void free_my_way(my_way *way);

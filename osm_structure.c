@@ -21,6 +21,15 @@ my_bounds* init_my_bounds(){
   return bound;
 }
 
+my_relation* init_my_relation(){
+  my_relation *rel = malloc(sizeof(my_relation));
+  rel->ways = NULL;
+  rel->nodes = NULL;
+  rel->relations = NULL;
+  rel->tags = g_hash_table_new( g_str_hash, g_str_equal);
+  return rel;
+}
+
 void add_tag_my_way(my_way *way, my_tag *tag){
   g_hash_table_insert(way->tag, &(tag->key), &(tag->value));
 }
@@ -31,6 +40,22 @@ void add_node_my_way(my_way *way, char *idNode){
 
 void add_tag_my_node(my_node *node, my_tag *tag){
   g_hash_table_insert(node->tag, &(tag->key), &(tag->value));
+}
+
+void add_way_to_relation(my_relation *rel, char *idWay){
+  rel->ways = g_slist_append(g_slist_copy(rel->ways), idWay);
+}
+
+void add_node_to_relation(my_relation *rel, char *idNode){
+  rel->nodes = g_slist_append(g_slist_copy(rel->nodes), idNode);
+}
+
+void add_relation_to_relation(my_relation *rel, char *idRel){
+  rel->relations = g_slist_append(g_slist_copy(rel->relations), idRel);
+}
+
+void add_tag_to_relation(my_relation *rel, my_tag *tag){
+  g_hash_table_insert(rel->tags, &(tag->key), &(tag->value));
 }
 
 void free_my_way(my_way *way){
