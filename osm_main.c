@@ -13,38 +13,39 @@ int main(int argc, char *argv[]){
 		printf("1 argument manquand: le nom du fichier xml/osm a parser.\n");
 		return -1;
 	}
-	my_bounds *bound;
-	GHashTable *ways;
-	GHashTable *nodes;
-	GHashTable *relations;
-	relations = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);
-	nodes = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);//initialisation de l'hashtable des nodes
-	ways = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);//initialisation de l'hashtable des ways
-	bound = init_my_bounds();
-	parse_file_v(relations, ways, nodes, bound, argv[1]);
+	my_bounds *hash_bound;
+	GHashTable *hash_ways;
+	GHashTable *hash_nodes;
+	GHashTable *hash_relations;
+	hash_relations = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);
+	hash_nodes = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);//initialisation de l'hashtable des nodes
+	hash_ways = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);//initialisation de l'hashtable des ways
+	hash_bound = init_my_bounds();
+	parse_file_v(hash_relations, hash_ways, hash_nodes, hash_bound, argv[1]);
 	SDL_Window *win = NULL;
   SDL_Renderer *renderer = NULL;
   //SDL_Texture *bitmapTex = NULL;
   //SDL_Surface *bitmapSurface = NULL;
   int posX = 100, posY = 100, width = WIDTH, height = HEIGHT;
 	/*GHashTableIter iter;
-	gpointer key;
+	//gpointer key;
 	gpointer val;
 	int i=0;
 	g_hash_table_iter_init(&iter, ways);
-	 while(g_hash_table_iter_next(&iter, &key, &val)) {
-			 g_print("key\t: %s\t value: %d\n", (char *) key, ((my_way *)val)->count_nodes);
+	 while(g_hash_table_iter_next(&iter, NULL, &val)){
+		 my_way *re = (my_way *)val;
+			 g_print("rel: %s\n",re->at.id );
 			 i++;
 			 printf("%d\n", i);
-	 }
-	 */
+	 }*/
+
   SDL_Init(SDL_INIT_VIDEO);
 
   win = SDL_CreateWindow("MY OSM RENDERER", posX, posY, width, height, 0);
 
   renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
 	// clear screen with red color
-  SDL_SetRenderDrawColor(renderer, 239, 239, 239, 255);
+  SDL_SetRenderDrawColor(renderer, 221, 221, 221, 255);
   SDL_RenderClear(renderer);
   //bitmapSurface = SDL_LoadBMP("img/hello.bmp");
   //bitmapTex = SDL_CreateTextureFromSurface(renderer, bitmapSurface);
@@ -56,7 +57,10 @@ int main(int argc, char *argv[]){
   //filledPolygonRGBA(renderer, s, t, 5, 255, 0, 255, 155);
 	//SDL_RenderPresent(renderer);
 	printf("draw ...\n");
-	dessiner_ways(renderer, ways, nodes );
+	//dessiner_ways(renderer, ways, nodes );
+	dessiner_relations(renderer,hash_relations,hash_ways,hash_nodes);
+	dessiner_hash_ways(renderer,hash_ways,hash_nodes);
+	SDL_RenderPresent(renderer);
   while (1) {
       SDL_Event e;
       if (SDL_PollEvent(&e)) {

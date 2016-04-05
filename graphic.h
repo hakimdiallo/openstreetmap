@@ -7,9 +7,12 @@
 #include "osm.h"
 #include "osm_structure.h"
 
-  void draw_line_with_width(SDL_Renderer *renderer, my_way *way, GHashTable *nodes, uint8_t w, uint8_t r, uint8_t g, uint8_t b);
-  void dessiner_ways(SDL_Renderer *renderer, GHashTable *ways, GHashTable *nodes);
-
+void draw_line_with_width(SDL_Renderer *renderer, my_way *way, GHashTable *nodes, uint8_t w, uint8_t r, uint8_t g, uint8_t b);
+void dessiner_ways(SDL_Renderer *renderer, GHashTable *ways, GHashTable *nodes);
+void dessiner_hash_ways(SDL_Renderer *renderer, GHashTable *ways, GHashTable *nodes);
+void dessiner_relations(SDL_Renderer *renderer, GHashTable *relations, GHashTable *ways, GHashTable *nodes);
+void dessiner_une_relation(SDL_Renderer *renderer, my_relation *rel, GHashTable *relations, GHashTable *ways, GHashTable *nodes);
+void dessiner_way(SDL_Renderer *renderer, my_way *w, GHashTable *ways, GHashTable *nodes);
 #endif
 /*
 void attendreTouche();//Attend que l'utilisateur appuie sur une touche ou la croix rouge

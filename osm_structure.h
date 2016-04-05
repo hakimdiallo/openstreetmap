@@ -38,6 +38,7 @@ typedef struct my_way {
 	my_attributs at;
 	GSList *nodes;
 	GHashTable *tag;
+	int drawn;
 } my_way;
 
 typedef struct my_relation{

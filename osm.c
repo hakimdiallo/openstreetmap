@@ -57,9 +57,10 @@ void parse_file_v(GHashTable *relations, GHashTable *ways, GHashTable *nodes, my
 }
 
 void setWayInformation(GHashTable *ways, xmlNodePtr noeud){
-    xmlNodePtr child = noeud->children;
     my_way *way = init_my_way();
-    strcpy(way->at.id, (const char *) xmlGetProp(noeud, BAD_CAST "id"));
+    char *id = (char *)xmlGetProp(noeud, BAD_CAST "id");
+    strcpy(way->at.id,id);
+    xmlNodePtr child = noeud->children;
     while( child != NULL){
       if(xmlStrEqual(child->name, BAD_CAST "nd")){
         xmlChar *ref = xmlGetProp(child, BAD_CAST "ref");
@@ -74,7 +75,7 @@ void setWayInformation(GHashTable *ways, xmlNodePtr noeud){
       }
       child = child->next;
     }
-    g_hash_table_insert(ways, way->at.id, way);
+    g_hash_table_insert(ways, &(way->at.id), way);
 }
 
 void setNodeInformations(GHashTable *nodes, xmlNodePtr noeud, my_bounds *bound){
@@ -117,19 +118,23 @@ void setBoundInformations(my_bounds *bound, xmlNodePtr noeud){
 void setRelationInformations(GHashTable *relations, xmlNodePtr noeud){
   my_relation *rel = init_my_relation();
   char *id = (char *)xmlGetProp(noeud, BAD_CAST "id");
+  strcpy(rel->at.id,id);
   xmlNodePtr child = noeud->children;
   while ( child != NULL ) {
+    xmlChar *ref = NULL;
     if( xmlStrEqual(child->name, BAD_CAST "member") ){
       xmlChar *member = xmlGetProp(child, BAD_CAST "type");
-      xmlChar *ref = xmlGetProp(child, BAD_CAST "ref");
+      ref = xmlGetProp(child, BAD_CAST "ref");
+      char reff[20];
+      strcpy(reff,(char *)ref);
       if( xmlStrEqual(member, BAD_CAST "way") ) {
-        add_way_to_relation(rel,(char *)ref);
+        add_way_to_relation(rel,reff);
       }
       else if( xmlStrEqual(member, BAD_CAST "node") ) {
-        add_node_to_relation(rel,(char *)ref);
+        add_node_to_relation(rel,reff);
       }
       else if( xmlStrEqual(member, BAD_CAST "relation") ) {
-        add_relation_to_relation(rel,(char *)ref);
+        add_relation_to_relation(rel,reff);
       }
     }
     else{
@@ -137,8 +142,9 @@ void setRelationInformations(GHashTable *relations, xmlNodePtr noeud){
       add_tag_to_relation(rel,tag);
     }
     child = child->next;
+    //xmlFree(ref);
   }
-  g_hash_table_insert(relations, &id, rel);
+  g_hash_table_insert(relations, &(rel->at.id), rel);
 }
 
 //Calcule les coordonnées y sur la fenêtre
