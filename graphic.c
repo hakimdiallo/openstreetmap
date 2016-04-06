@@ -246,13 +246,13 @@ void dessiner_way_water(SDL_Renderer *renderer, my_way *w, GHashTable *ways, GHa
           }
       }
       else if(!strcmp(tag_key,"natural")){
-        if(!strcmp(tag_value,"water")){
+        /*if(!strcmp(tag_value,"water")){
           short *tab_x = get_tab_x(w,nodes);
           short *tab_y = get_tab_y(w,nodes);
           filledPolygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 180, 208, 209, 255);
           polygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);
-        }
-        else if(!strcmp(tag_value,"coastline")){
+        }*/
+        if(!strcmp(tag_value,"coastline")){
           if ( !coastline) {
             SDL_SetRenderDrawColor(renderer, 180, 208, 209, 255);
             SDL_RenderClear(renderer);
@@ -509,20 +509,20 @@ void dessiner_way(SDL_Renderer *renderer, my_way *w, GHashTable *ways, GHashTabl
             draw_line_with_width(renderer,w,nodes,2,180,208,209);
           }
         }*/
-        /*else if(!strcmp(tag_key,"natural")){
+        if(!strcmp(tag_key,"natural")){
           if(!strcmp(tag_value,"water")){
             short *tab_x = get_tab_x(w,nodes);
             short *tab_y = get_tab_y(w,nodes);
             filledPolygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 180, 208, 209, 255);
             polygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);
           }
-          else if(!strcmp(tag_value,"coastline")){
+          //else if(!strcmp(tag_value,"coastline")){
             //short *tab_x = get_tab_x(ways[i]);
             //short *tab_y = get_tab_y(ways[i]);
             //filledPolygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 180, 208, 209, 255);
-          }
-        }*/
-        if(!strcmp(tag_key,"landuse") || !strcmp(tag_key,"leisure")){
+          //}
+        }
+        else if(!strcmp(tag_key,"landuse") || !strcmp(tag_key,"leisure")){
           if(!strcmp(tag_value,"grass")){
             short *tab_x = get_tab_x(w,nodes);
             short *tab_y = get_tab_y(w,nodes);
