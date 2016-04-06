@@ -24,58 +24,55 @@ int main(int argc, char *argv[]){
 	parse_file_v(relations, ways, nodes, bound, argv[1]);
 	SDL_Window *win = NULL;
   SDL_Renderer *renderer = NULL;
-  //SDL_Texture *bitmapTex = NULL;
-  //SDL_Surface *bitmapSurface = NULL;
-  int posX = 100, posY = 100, width = WIDTH, height = HEIGHT;
-	/*GHashTableIter iter;
-	gpointer key;
-	gpointer val;
-	int i=0;
-	g_hash_table_iter_init(&iter, ways);
-	 while(g_hash_table_iter_next(&iter, &key, &val)) {
-			 g_print("key\t: %s\t value: %d\n", (char *) key, ((my_way *)val)->count_nodes);
-			 i++;
-			 printf("%d\n", i);
-	 }
-	 */
+
   SDL_Init(SDL_INIT_VIDEO);
 
-  win = SDL_CreateWindow("MY OSM RENDERER", posX, posY, width, height, 0);
+  win = SDL_CreateWindow("MY OSM RENDERER", SDL_WINDOWPOS_CENTERED , SDL_WINDOWPOS_CENTERED, WIDTH+100, HEIGHT+100, SDL_WINDOW_RESIZABLE);
 
   renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
-	// clear screen with red color
-  SDL_SetRenderDrawColor(renderer, 239, 239, 239, 255);
-  SDL_RenderClear(renderer);
-  //bitmapSurface = SDL_LoadBMP("img/hello.bmp");
-  //bitmapTex = SDL_CreateTextureFromSurface(renderer, bitmapSurface);
-  //SDL_FreeSurface(bitmapSurface);
-	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-  //SDL_RenderDrawLine(renderer, 0, 0, 200, 500);
-	//short s[5] = { 400, 450, 450, 425, 300 };
-  //short t[5] = { 400, 410, 450, 425, 500};
-  //filledPolygonRGBA(renderer, s, t, 5, 255, 0, 255, 155);
-	//SDL_RenderPresent(renderer);
-	printf("draw ...\n");
+	SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,SDL_TEXTUREACCESS_TARGET,WIDTH,HEIGHT);
+	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");  // permet d'obtenir les redimensionnements plus doux.
+	SDL_SetRenderTarget(renderer, texture); //on modifie la texture
+	SDL_SetRenderDrawColor(renderer, 239, 239, 239, 255);
+	SDL_RenderClear(renderer);
 	dessiner_ways(renderer, ways, nodes );
-  while (1) {
-      SDL_Event e;
-      if (SDL_PollEvent(&e)) {
-          if (e.type == SDL_QUIT) {
-              break;
-          }
-      }
+	SDL_SetRenderTarget(renderer, NULL);// Dorénavent, on modifie à nouveau le renderer
+	SDL_Rect position;
+	SDL_QueryTexture(texture, NULL, NULL, &position.w, &position.h);
+	int ecranw,  ecranh;
+	SDL_GetWindowSize(win, &ecranw, &ecranh); //on recupère la largeur et la hauteur de la fenêtre
+	position.x = ecranw/2 - position.w/2;
+	position.y = ecranh/2 - position.h/2;
 
-      //SDL_RenderClear(renderer);
-      //SDL_RenderCopy(renderer, bitmapTex, NULL, NULL);
+	SDL_RenderCopy(renderer,texture,NULL,&position);
+	SDL_RenderPresent(renderer);
+	printf("draw ...\n");
+	int continuer = 1;
+  while (continuer) {
+      SDL_Event event;
+      SDL_WaitEvent(&event);
+      switch (event.type) {
+      	case SDL_QUIT:
+					continuer = 0;
+					break;
+				case SDL_WINDOWEVENT:
+	        switch ( event.window.event ) {
+						case SDL_WINDOWEVENT_SIZE_CHANGED:
+							position.x = event.window.data1/2 - position.w/2;
+							position.y = event.window.data2/2 - position.h/2;
+            break;
+
+	        }
+      }
+			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+			SDL_RenderClear(renderer);
+			SDL_RenderCopy(renderer,texture,NULL,&position);
+			SDL_RenderPresent(renderer);
   }
-	//free_my_ways(ways);
-	//my_hashmap_node* nodes=stockage_nodes(context);
-	//int i=0;
-	//printf(" valeur %s\n", get_hashmap_node(nodes, 1321042431) );
-  //SDL_DestroyTexture(bitmapTex);
-	//free_my_ways(ways);
-	//free_my_nodes(nodes);
-	//free_my_bound(bound);
+/*
+	free_my_ways(ways);
+	free_my_nodes(nodes);
+	free_my_bound(bound);*/
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(win);
   SDL_Quit();
