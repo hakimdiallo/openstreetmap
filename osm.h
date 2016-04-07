@@ -22,10 +22,14 @@
 #include <math.h>
 #include "osm_structure.h"
 
+#include <math.h>
+#define deg2rad(d) (((d)*M_PI)/180)
+#define rad2deg(d) (((d)*180)/M_PI)
+#define earth_radius 6378137
 
 #define DEBUG 0
 #define WIDTH 900
-#define HEIGHT 650
+#define HEIGHT 600
 #define CIRC_TERRE 40075.00
 #define RAYON_TERRE 6371.00
 

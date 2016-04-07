@@ -1,7 +1,10 @@
 #include "osm.h"
+#include "mercator.h"
+double calcul_coor_x(double d, my_bounds *bn);
+double calcul_coor_y(double d, my_bounds *bn);
 
-int calcul_coor_x(double d, my_bounds *bn);
-int calcul_coor_y(double d, my_bounds *bn);
+double lat2y_d(double lat) { return rad2deg(log(tan(M_PI/4+ deg2rad(lat)/2))); }
+double lon2x_d(double lon) { return lon; }
 
 void parcours_largeur(GHashTable *relations, GHashTable *ways, GHashTable *nodes, my_bounds *bound, xmlNodePtr noeud, fct_parcours_t f){
     xmlNodePtr n;
@@ -83,8 +86,15 @@ void setNodeInformations(GHashTable *nodes, xmlNodePtr noeud, my_bounds *bound){
   strcpy(n->at.visible, (const char *)xmlGetProp(noeud,BAD_CAST "visible"));
   xmlChar *lat = xmlGetProp(noeud,(const xmlChar *)"lat");
   xmlChar *lon = xmlGetProp(noeud,(const xmlChar *)"lon");
-  n->lat = calcul_coor_y( (RAYON_TERRE*sin(strtod((const char *)lat,NULL)) * sqrt(2)), bound );
-  n->lon = calcul_coor_x( ((RAYON_TERRE*M_PI*strtod((const char *)lon,NULL))/(180 * sqrt(2))), bound );
+  //n->lat = calcul_coor_y( ( merc_y(strtod((const char *)lat,NULL)) ) / 0.784308 , bound);
+  //n->lon = calcul_coor_x( ( merc_y(strtod((const char *)lon,NULL)) ) / 0.784308, bound);
+  //printf("lon%f\tlat%f\n", n->lon, n->lat);
+  double cor = fmax( ((bound->maxlat - bound->minlat) / HEIGHT), ((bound->maxlon - bound->minlon) / WIDTH) );
+  n->lat = calcul_coor_y( merc_y(strtod((const char *)lat,NULL)), bound ) / cor ;
+  n->lon = calcul_coor_x( merc_x(strtod((const char *)lon,NULL)), bound ) / cor ;
+  //printf("lon%f\tlat%f\n", n->lon, n->lat);
+  //n->lat = calcul_coor_y( (RAYON_TERRE*sin(strtod((const char *)lat,NULL)) * sqrt(2)), bound );
+  //n->lon = calcul_coor_x( ((RAYON_TERRE*M_PI*strtod((const char *)lon,NULL))/(180 * sqrt(2))), bound );
   xmlNodePtr child = noeud->children;
   while ( child != NULL ) {
     my_tag *tag = getTagInformations(child);
@@ -108,10 +118,19 @@ void setBoundInformations(my_bounds *bound, xmlNodePtr noeud){
   xmlChar *minlon = xmlGetProp(noeud,(const xmlChar *)"minlon");
   xmlChar *maxlat = xmlGetProp(noeud,(const xmlChar *)"maxlat");
   xmlChar *maxlon = xmlGetProp(noeud,(const xmlChar *)"maxlon");
-  bound->maxlat = RAYON_TERRE*sin(strtod((const char *)maxlat,NULL)) * sqrt(2);
+  bound->maxlat = merc_y(strtod((const char *)maxlat,NULL));
+  bound->minlat = merc_y(strtod((const char *)minlat,NULL));
+  bound->maxlon = merc_x(strtod((const char *)maxlon,NULL));
+  bound->minlon = merc_x(strtod((const char *)minlon,NULL));
+  /*bound->maxlat = RAYON_TERRE*sin(strtod((const char *)maxlat,NULL)) * sqrt(2);
   bound->minlat = RAYON_TERRE*sin(strtod((const char *)minlat,NULL)) * sqrt(2);
   bound->maxlon = (RAYON_TERRE*M_PI*strtod((const char *)maxlon,NULL))/(180 * sqrt(2));
-  bound->minlon = (RAYON_TERRE*M_PI*strtod((const char *)minlon,NULL))/(180 * sqrt(2));
+  bound->minlon = (RAYON_TERRE*M_PI*strtod((const char *)minlon,NULL))/(180 * sqrt(2));*/
+  printf("minlon %f\nmaxlon %f\nminlat %f\nmaxlat %f\n", bound->minlon,  bound->maxlon, bound->minlat, bound->maxlat);
+  printf("height:%f\n", (bound->maxlat - bound->minlat) );
+  printf("width:%f\n", (bound->maxlon - bound->minlon));
+  printf("corrH:%f\n", (bound->maxlat - bound->minlat)/HEIGHT );
+  printf("corrW:%f\n", (bound->maxlon - bound->minlon)/WIDTH);
 }
 
 void setRelationInformations(GHashTable *relations, xmlNodePtr noeud){
@@ -142,11 +161,13 @@ void setRelationInformations(GHashTable *relations, xmlNodePtr noeud){
 }
 
 //Calcule les coordonnées y sur la fenêtre
-int calcul_coor_y(double d, my_bounds *bn){
-  return HEIGHT - (int)( HEIGHT * ((d - bn->minlat)/(bn->maxlat - bn->minlat)) );
+double calcul_coor_y(double d, my_bounds *bn){
+  double height = bn->maxlat - bn->minlat ;
+  return height - ( height * ((d - bn->minlat)/(bn->maxlat - bn->minlat)) );
 }
 
 //Calcule les coordonnées x sur la fenêtre
-int calcul_coor_x(double d, my_bounds *bn){
-  return (int)( WIDTH * ((d - bn->minlon)/(bn->maxlon - bn->minlon)) );
+double calcul_coor_x(double d, my_bounds *bn){
+  double width = bn->maxlon - bn->minlon ;
+  return ( width * ((d - bn->minlon)/(bn->maxlon - bn->minlon)) );
 }
