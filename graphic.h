@@ -9,7 +9,7 @@
 
   void draw_line_with_width(SDL_Renderer *renderer, my_way *way, GHashTable *nodes, uint8_t w, uint8_t r, uint8_t g, uint8_t b);
   void dessiner_ways(SDL_Renderer *renderer, GHashTable *ways, GHashTable *nodes);
-
+  void rendererMap(GHashTable *ways, GHashTable *nodes);
 #endif
 /*
 void attendreTouche();//Attend que l'utilisateur appuie sur une touche ou la croix rouge
