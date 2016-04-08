@@ -7,6 +7,7 @@ my_way* init_my_way(){
   my_way *way  = malloc(sizeof(my_way));
   way->nodes = NULL;
   way->tag = g_hash_table_new( g_str_hash, g_str_equal);
+  way->drawn = 0;
   return way;
 }
 

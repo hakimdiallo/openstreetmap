@@ -3,8 +3,6 @@
 double calcul_coor_x(double d, my_bounds *bn);
 double calcul_coor_y(double d, my_bounds *bn);
 
-double lat2y_d(double lat) { return rad2deg(log(tan(M_PI/4+ deg2rad(lat)/2))); }
-double lon2x_d(double lon) { return lon; }
 
 void parcours_largeur(GHashTable *relations, GHashTable *ways, GHashTable *nodes, my_bounds *bound, xmlNodePtr noeud, fct_parcours_t f){
     xmlNodePtr n;
@@ -60,16 +58,20 @@ void parse_file_v(GHashTable *relations, GHashTable *ways, GHashTable *nodes, my
 }
 
 void setWayInformation(GHashTable *ways, xmlNodePtr noeud){
-    xmlNodePtr child = noeud->children;
     my_way *way = init_my_way();
-    strcpy(way->at.id, (const char *) xmlGetProp(noeud, BAD_CAST "id"));
+    char *id = (char *)xmlGetProp(noeud, BAD_CAST "id");
+    strcpy(way->at.id,id);
+    //printf("%s\n",way->at.id);
+    xmlNodePtr child = noeud->children;
     while( child != NULL){
       if(xmlStrEqual(child->name, BAD_CAST "nd")){
         xmlChar *ref = xmlGetProp(child, BAD_CAST "ref");
         //my_node *nd1 = (my_node *)g_hash_table_lookup(nodes, (char *)ref) ;
         //if(nd1 != NULL)
           //add_node_my_way(way,nd1);
-        add_node_my_way(way, (char *)ref);
+        char *reff = (char *)malloc(20*sizeof(char));
+        strcpy(reff,(char *)ref);
+        add_node_my_way(way,reff);
       }
       else {
         my_tag *tag = getTagInformations(child);
@@ -77,7 +79,7 @@ void setWayInformation(GHashTable *ways, xmlNodePtr noeud){
       }
       child = child->next;
     }
-    g_hash_table_insert(ways, way->at.id, way);
+    g_hash_table_insert(ways, &(way->at.id), way);
 }
 
 void setNodeInformations(GHashTable *nodes, xmlNodePtr noeud, my_bounds *bound){
@@ -136,19 +138,23 @@ void setBoundInformations(my_bounds *bound, xmlNodePtr noeud){
 void setRelationInformations(GHashTable *relations, xmlNodePtr noeud){
   my_relation *rel = init_my_relation();
   char *id = (char *)xmlGetProp(noeud, BAD_CAST "id");
+  strcpy(rel->at.id,id);
   xmlNodePtr child = noeud->children;
   while ( child != NULL ) {
+    xmlChar *ref = NULL;
     if( xmlStrEqual(child->name, BAD_CAST "member") ){
       xmlChar *member = xmlGetProp(child, BAD_CAST "type");
-      xmlChar *ref = xmlGetProp(child, BAD_CAST "ref");
+      ref = xmlGetProp(child, BAD_CAST "ref");
+      char *reff = (char *)malloc(20*sizeof(char));
+      strcpy(reff,(char *)ref);
       if( xmlStrEqual(member, BAD_CAST "way") ) {
-        add_way_to_relation(rel,(char *)ref);
+        add_way_to_relation(rel,reff);
       }
       else if( xmlStrEqual(member, BAD_CAST "node") ) {
-        add_node_to_relation(rel,(char *)ref);
+        add_node_to_relation(rel,reff);
       }
       else if( xmlStrEqual(member, BAD_CAST "relation") ) {
-        add_relation_to_relation(rel,(char *)ref);
+        add_relation_to_relation(rel,reff);
       }
     }
     else{
@@ -157,7 +163,7 @@ void setRelationInformations(GHashTable *relations, xmlNodePtr noeud){
     }
     child = child->next;
   }
-  g_hash_table_insert(relations, &id, rel);
+  g_hash_table_insert(relations, &(rel->at.id), rel);
 }
 
 //Calcule les coordonnées y sur la fenêtre

@@ -14,18 +14,20 @@ int main(int argc, char *argv[]){
 		return -1;
 	}
 	my_bounds *bound;
-	GHashTable *ways;
-	GHashTable *nodes;
-	GHashTable *relations;
-	relations = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);
-	nodes = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);//initialisation de l'hashtable des nodes
-	ways = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);//initialisation de l'hashtable des ways
+	GHashTable *hash_ways;
+	GHashTable *hash_nodes;
+	GHashTable *hash_relations;
+	hash_relations = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);
+	hash_nodes = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);//initialisation de l'hashtable des nodes
+	hash_ways = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);//initialisation de l'hashtable des ways
 	bound = init_my_bounds();
-	parse_file_v(relations, ways, nodes, bound, argv[1]);
-	rendererMap(ways, nodes);
-	g_hash_table_destroy(ways);
-	g_hash_table_destroy(nodes);
-	g_hash_table_destroy(relations);
+	parse_file_v(hash_relations, hash_ways, hash_nodes, bound, argv[1]);
+
+	rendererMap(hash_ways, hash_nodes, hash_relations);
+	g_hash_table_destroy(hash_ways);
+	g_hash_table_destroy(hash_nodes);
+	g_hash_table_destroy(hash_relations);
 	free_my_bound(bound);
+
 	return 0;
 }
