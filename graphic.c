@@ -65,13 +65,16 @@ void dessiner_ways(SDL_Renderer *renderer, GHashTable *ways, GHashTable *nodes){
       if(!strcmp(tag_key,"highway")){
           //v = strdup(ways[i]->tag[j].value);
           if(!strcmp(tag_value,"motorway")){
-            draw_line_with_width(renderer,w,nodes,18,233,144,160);
+            //fait
+            draw_line_with_width(renderer,w,nodes,18,243,132,154);
           }
           else if(!strcmp(tag_value,"trunk")){
-            draw_line_with_width(renderer,w,nodes,18,251,178,154);
+            //fait
+            draw_line_with_width(renderer,w,nodes,18,255,176,147);
           }
           else if(!strcmp(tag_value,"primary") || !strcmp(tag_value,"primary_link")){
-            draw_line_with_width(renderer,w,nodes,15,236,152,154);
+            //fait 
+            draw_line_with_width(renderer,w,nodes,15,254,221,155);
           }
           else if(!strcmp(tag_value,"secondary") || !strcmp(tag_value,"secondary_link")){
             draw_line_with_width(renderer,w,nodes,15,254,215,165);
