@@ -1,6 +1,7 @@
 #include "osm.h"
 #include "string.h"
 #include "graphic.h"
+#include "graphic_opengl.h"
 #include <SDL.h>
 #include <stdlib.h>
 
@@ -22,8 +23,11 @@ int main(int argc, char *argv[]){
 	hash_ways = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);//initialisation de l'hashtable des ways
 	bound = init_my_bounds();
 	parse_file_v(hash_relations, hash_ways, hash_nodes, bound, argv[1]);
-
-	rendererMap(hash_ways, hash_nodes, hash_relations);
+	
+	if(opengl)
+		rendererMap_opengl(hash_ways, hash_nodes, hash_relations);
+	else
+		rendererMap(hash_ways, hash_nodes, hash_relations);
 	g_hash_table_destroy(hash_ways);
 	g_hash_table_destroy(hash_nodes);
 	g_hash_table_destroy(hash_relations);

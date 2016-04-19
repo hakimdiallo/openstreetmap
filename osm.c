@@ -1,5 +1,6 @@
 #include "osm.h"
 #include "mercator.h"
+
 double calcul_coor_x(double d, my_bounds *bn);
 double calcul_coor_y(double d, my_bounds *bn);
 
@@ -144,11 +145,12 @@ void setRelationInformations(GHashTable *relations, xmlNodePtr noeud){
     xmlChar *ref = NULL;
     if( xmlStrEqual(child->name, BAD_CAST "member") ){
       xmlChar *member = xmlGetProp(child, BAD_CAST "type");
+      xmlChar *role = xmlGetProp(child, BAD_CAST "role");
       ref = xmlGetProp(child, BAD_CAST "ref");
       char *reff = (char *)malloc(20*sizeof(char));
       strcpy(reff,(char *)ref);
       if( xmlStrEqual(member, BAD_CAST "way") ) {
-        add_way_to_relation(rel,reff);
+        add_way_to_relation(rel,reff,role);
       }
       else if( xmlStrEqual(member, BAD_CAST "node") ) {
         add_node_to_relation(rel,reff);
@@ -169,7 +171,10 @@ void setRelationInformations(GHashTable *relations, xmlNodePtr noeud){
 //Calcule les coordonnées y sur la fenêtre
 double calcul_coor_y(double d, my_bounds *bn){
   double height = bn->maxlat - bn->minlat ;
-  return height - ( height * ((d - bn->minlat)/(bn->maxlat - bn->minlat)) );
+  if(opengl)
+    return ( height * ((d - bn->minlat)/(bn->maxlat - bn->minlat)) );
+  else
+    return height - ( height * ((d - bn->minlat)/(bn->maxlat - bn->minlat)) );
 }
 
 //Calcule les coordonnées x sur la fenêtre
