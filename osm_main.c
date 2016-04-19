@@ -1,6 +1,6 @@
 #include "osm.h"
 #include "string.h"
-#include "graphic_bis.h"
+#include "graphic.h"
 #include <SDL.h>
 #include <stdlib.h>
 
