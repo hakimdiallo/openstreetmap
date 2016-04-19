@@ -1,6 +1,6 @@
 #include "osm.h"
 #include "string.h"
-#include "graphic.h"
+#include "graphic_bis.h"
 #include <SDL.h>
 #include <stdlib.h>
 
@@ -14,20 +14,22 @@ int main(int argc, char *argv[]){
 		return -1;
 	}
 	my_bounds *bound;
+	GHashTable *ways_water;
 	GHashTable *hash_ways;
 	GHashTable *hash_nodes;
 	GHashTable *hash_relations;
 	hash_relations = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);
 	hash_nodes = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);//initialisation de l'hashtable des nodes
 	hash_ways = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);//initialisation de l'hashtable des ways
+	ways_water = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);
 	bound = init_my_bounds();
-	parse_file_v(hash_relations, hash_ways, hash_nodes, bound, argv[1]);
+	parse_file_v(hash_relations, ways_water, hash_ways, hash_nodes, bound, argv[1]);
 
-	rendererMap(hash_ways, hash_nodes, hash_relations);
-	g_hash_table_destroy(hash_ways);
-	g_hash_table_destroy(hash_nodes);
-	g_hash_table_destroy(hash_relations);
-	free_my_bound(bound);
+	rendererMap(ways_water, hash_ways, hash_nodes, hash_relations);
+	//g_hash_table_destroy(hash_ways);
+	//g_hash_table_destroy(hash_nodes);
+	//g_hash_table_destroy(hash_relations);
+	//free_my_bound(bound);
 
 	return 0;
 }
