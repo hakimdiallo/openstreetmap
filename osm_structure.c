@@ -34,7 +34,7 @@ my_relation* init_my_relation(){
 }
 
 void add_tag_my_way(my_way *way, my_tag *tag){
-  g_hash_table_insert(way->tag, &(tag->key), &(tag->value));
+  g_hash_table_insert(way->tag, tag->key, tag->value);
 }
 
 void add_node_my_way(my_way *way, char *idNode){
@@ -42,7 +42,7 @@ void add_node_my_way(my_way *way, char *idNode){
 }
 
 void add_tag_my_node(my_node *node, my_tag *tag){
-  g_hash_table_insert(node->tag, &(tag->key), &(tag->value));
+  g_hash_table_insert(node->tag, tag->key, tag->value);
 }
 
 void add_way_to_relation(my_relation *rel, char *idWay, xmlChar *role){
@@ -65,7 +65,7 @@ void add_relation_to_relation(my_relation *rel, char *idRel){
 }
 
 void add_tag_to_relation(my_relation *rel, my_tag *tag){
-  g_hash_table_insert(rel->tags, &(tag->key), &(tag->value));
+  g_hash_table_insert(rel->tags, tag->key, tag->value);
 }
 
 void free_my_way(my_way *way){

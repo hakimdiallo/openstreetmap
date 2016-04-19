@@ -109,10 +109,12 @@ void setNodeInformations(GHashTable *nodes, xmlNodePtr noeud, my_bounds *bound){
 
 my_tag *getTagInformations(xmlNodePtr node){
   my_tag *tag = (my_tag *)malloc(sizeof(my_tag));
-  xmlChar *k = xmlGetProp(node,(const xmlChar *)"k");
-  xmlChar *v = xmlGetProp(node,(const xmlChar *)"v");
-  strcpy(tag->key,(char *)k);
-  strcpy(tag->value,(char *)v);
+  tag->key = NULL;
+  tag->value = NULL;
+  char *k = (char *)xmlGetProp(node,(const xmlChar *)"k");
+  char *v = (char *)xmlGetProp(node,(const xmlChar *)"v");
+  tag->key = strdup(k);
+  tag->value = strdup(v);
   return tag;
 }
 

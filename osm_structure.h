@@ -13,8 +13,8 @@
 
 
 typedef struct my_tag {
-	char key[200];
-	char value[200];
+	char *key;
+	char *value;
 } my_tag;
 
 typedef struct my_attributs {
