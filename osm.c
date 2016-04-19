@@ -1,5 +1,6 @@
 #include "osm.h"
 #include "mercator.h"
+
 double calcul_coor_x(double d, my_bounds *bn);
 double calcul_coor_y(double d, my_bounds *bn);
 
@@ -169,6 +170,9 @@ void setRelationInformations(GHashTable *relations, xmlNodePtr noeud){
 //Calcule les coordonnées y sur la fenêtre
 double calcul_coor_y(double d, my_bounds *bn){
   double height = bn->maxlat - bn->minlat ;
+  if(opengl)
+    return ( height * ((d - bn->minlat)/(bn->maxlat - bn->minlat)) );
+  else
   return height - ( height * ((d - bn->minlat)/(bn->maxlat - bn->minlat)) );
 }
 

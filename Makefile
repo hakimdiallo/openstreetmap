@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -lm -lSDL2_gfx -Wall
+CFLAGS = -g -lm -lSDL2_gfx -Wall -lglut -lGLU -lGL
 CPPFLAGS = `xml2-config --cflags --libs` `sdl2-config --cflags --libs` `pkg-config --cflags --libs glib-2.0`
 EXEC = osm_main
 HEADERS = $(wildcard *.h)
