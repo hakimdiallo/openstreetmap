@@ -4,18 +4,18 @@ double calcul_coor_x(double d, my_bounds *bn);
 double calcul_coor_y(double d, my_bounds *bn);
 
 
-void parcours_largeur(GHashTable *relations, GHashTable *ways_water, GHashTable *ways, GHashTable *nodes, my_bounds *bound, xmlNodePtr noeud, fct_parcours_t f){
+void parcours_largeur(GHashTable *relations,GHashTable *ways, GHashTable *nodes, my_bounds *bound, xmlNodePtr noeud, fct_parcours_t f){
     xmlNodePtr n;
     for (n = noeud; n != NULL; n = n->next) {
-      f(relations, ways_water, ways, nodes, bound, n);
+      f(relations, ways, nodes, bound, n);
     }
 }
 
-void stockageNoeudsOSM(GHashTable *relations, GHashTable *ways_water, GHashTable *ways, GHashTable *nodes, my_bounds *bound, xmlNodePtr noeud){
+void stockageNoeudsOSM(GHashTable *relations, GHashTable *ways, GHashTable *nodes, my_bounds *bound, xmlNodePtr noeud){
   if (noeud->type == XML_ELEMENT_NODE) {
     //xmlChar *chemin = xmlGetNodePath(noeud);
     if(xmlStrEqual(noeud->name, BAD_CAST "way")){
-      setWayInformation(ways_water, ways, noeud);
+      setWayInformation(ways, noeud);
     }
     else if (xmlStrEqual(noeud->name, BAD_CAST "node")){
       setNodeInformations(nodes,noeud, bound);
@@ -29,7 +29,7 @@ void stockageNoeudsOSM(GHashTable *relations, GHashTable *ways_water, GHashTable
   }
 }
 
-void parse_file_v(GHashTable *relations, GHashTable *ways_water, GHashTable *ways, GHashTable *nodes, my_bounds *bound, char *name){
+void parse_file_v(GHashTable *relations, GHashTable *ways, GHashTable *nodes, my_bounds *bound, char *name){
   xmlDocPtr doc;
   xmlNodePtr noeud;
 
@@ -53,16 +53,15 @@ void parse_file_v(GHashTable *relations, GHashTable *ways_water, GHashTable *way
     return ;
   }
   //parcour du fichier
-  parcours_largeur(relations, ways_water, ways, nodes, bound, noeud->children, stockageNoeudsOSM);
+  parcours_largeur(relations, ways, nodes, bound, noeud->children, stockageNoeudsOSM);
   xmlFreeDoc(doc);
 }
 
-void setWayInformation(GHashTable *ways_water, GHashTable *ways, xmlNodePtr noeud){
+void setWayInformation(GHashTable *ways, xmlNodePtr noeud){
     my_way *way = init_my_way();
     char *id = (char *)xmlGetProp(noeud, BAD_CAST "id");
     strcpy(way->at.id,id);
     //printf("%s\n",way->at.id);
-    int is_water = 0;
     xmlNodePtr child = noeud->children;
     while( child != NULL){
       if(xmlStrEqual(child->name, BAD_CAST "nd")){
@@ -78,18 +77,10 @@ void setWayInformation(GHashTable *ways_water, GHashTable *ways, xmlNodePtr noeu
       else {
         my_tag *tag = getTagInformations(child);
         add_tag_my_way(way,tag);
-        if(!strcmp(tag->value,"coastline") || !strcmp(tag->value,"river") || !strcmp(tag->value,"riverbank") || !strcmp(tag->value,"stream")){
-          is_water = 1;
-        }
       }
       child = child->next;
     }
-    if ( is_water ) {
-      g_hash_table_insert(ways_water, &(way->at.id), way);
-    }
-    else{
-      g_hash_table_insert(ways, &(way->at.id), way);
-    }
+    g_hash_table_insert(ways, &(way->at.id), way);
 }
 
 void setNodeInformations(GHashTable *nodes, xmlNodePtr noeud, my_bounds *bound){

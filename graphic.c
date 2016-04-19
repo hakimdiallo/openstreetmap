@@ -517,7 +517,7 @@ void rendererMap(GHashTable *ways_water, GHashTable *hash_ways, GHashTable *hash
 	SDL_SetRenderDrawColor(renderer, 221, 221, 221, 255);
 	SDL_RenderClear(renderer);
 	//dessiner_ways(renderer, ways, nodes );
-  dessiner_hash_ways(renderer,ways_water,hash_nodes);
+  //dessiner_hash_ways(renderer,ways_water,hash_nodes);
 	dessiner_relations(renderer,hash_relations,hash_ways,hash_nodes);
 	dessiner_hash_ways(renderer,hash_ways,hash_nodes);
 	SDL_SetRenderTarget(renderer, NULL);// Dorénavent, on modifie à nouveau le renderer
