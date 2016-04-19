@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <glib.h>
+#include <libxml/tree.h>
 
 
 #define MY_TAG_SIZE 20
@@ -43,6 +44,8 @@ typedef struct my_way {
 
 typedef struct my_relation{
 	my_attributs at;
+	GSList *ways_inner;
+	GSList *ways_outer;
 	GSList *ways;
 	GSList *nodes;
 	GSList *relations;
@@ -81,7 +84,7 @@ void add_node_my_way(my_way *way, char *idNode);
 void add_tag_my_node(my_node *node, my_tag *tag);
 
 //
-void add_way_to_relation(my_relation *rel, char *idWay);
+void add_way_to_relation(my_relation *rel, char *idWay, xmlChar *role);
 
 //
 void add_node_to_relation(my_relation *rel, char *idNode);

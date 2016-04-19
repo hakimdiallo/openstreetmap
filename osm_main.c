@@ -23,6 +23,7 @@ int main(int argc, char *argv[]){
 	hash_ways = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);//initialisation de l'hashtable des ways
 	bound = init_my_bounds();
 	parse_file_v(hash_relations, hash_ways, hash_nodes, bound, argv[1]);
+	
 	if(opengl)
 		rendererMap_opengl(hash_ways, hash_nodes, hash_relations);
 	else

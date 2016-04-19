@@ -24,6 +24,8 @@ my_bounds* init_my_bounds(){
 
 my_relation* init_my_relation(){
   my_relation *rel = malloc(sizeof(my_relation));
+  rel->ways_inner = NULL;
+  rel->ways_outer = NULL;
   rel->ways = NULL;
   rel->nodes = NULL;
   rel->relations = NULL;
@@ -43,8 +45,15 @@ void add_tag_my_node(my_node *node, my_tag *tag){
   g_hash_table_insert(node->tag, &(tag->key), &(tag->value));
 }
 
-void add_way_to_relation(my_relation *rel, char *idWay){
-  rel->ways = g_slist_append(g_slist_copy(rel->ways), idWay);
+void add_way_to_relation(my_relation *rel, char *idWay, xmlChar *role){
+  if ( xmlStrEqual(role, BAD_CAST "inner") ) {
+    rel->ways_inner = g_slist_append(g_slist_copy(rel->ways_inner), idWay);
+  }
+  else if ( xmlStrEqual(role, BAD_CAST "outer") ) {
+    rel->ways_outer = g_slist_append(g_slist_copy(rel->ways_outer), idWay);
+  }
+  else
+    rel->ways = g_slist_append(g_slist_copy(rel->ways), idWay);
 }
 
 void add_node_to_relation(my_relation *rel, char *idNode){

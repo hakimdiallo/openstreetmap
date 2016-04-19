@@ -10,21 +10,10 @@
 #include <math.h>
 #include "osm_structure.h"
 
-#include <glib.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <libxml/tree.h>
-#include <libxml/parser.h>
-#include <libxml/xpath.h>
-#include <string.h>
-#include <SDL.h>
-#include <math.h>
-#include "osm_structure.h"
-
-#define opengl 0
+#define opengl 1
 #define DEBUG 0
-#define WIDTH 900
-#define HEIGHT 600
+#define WIDTH 1000
+#define HEIGHT 700
 
 
 
