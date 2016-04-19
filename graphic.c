@@ -224,7 +224,7 @@ void dessiner_ways(SDL_Renderer *renderer, GHashTable *ways, GHashTable *nodes){
             //short *tab_x = get_tab_x(ways[i]);
             //short *tab_y = get_tab_y(ways[i]);
             //polygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 173,171,168, 255);
-            draw_line_with_width(renderer,w,nodes,1,173,171,168);
+            draw_line_with_width(renderer,w,nodes,1,171,170,166);
           }
         }
         else if(!strcmp(tag_key,"source")){
@@ -261,14 +261,15 @@ void dessiner_way_water(SDL_Renderer *renderer, my_way *w, GHashTable *ways, GHa
       char *tag_value = (char *)value;
       if(!strcmp(tag_key,"waterway")){
           if(!strcmp(tag_value,"river")){
-            draw_line_with_width(renderer,w,nodes,10,180,190,209);
+            draw_line_with_width(renderer,w,nodes,10,174,208,208);
           }
           else if(!strcmp(tag_value,"riverbank")){
             short *tab_x = get_tab_x(w,nodes);
             short *tab_y = get_tab_y(w,nodes);
-            filledPolygonRGBA(renderer, tab_x, tab_y,g_slist_length(w->nodes), 181,208,208, 255);
+            filledPolygonRGBA(renderer, tab_x, tab_y,g_slist_length(w->nodes), 181,174,208,208);
           }
           else if(!strcmp(tag_value,"stream")){
+            //fait
             draw_line_with_width(renderer,w,nodes,2,180,208,209);
           }
       }
@@ -281,7 +282,8 @@ void dessiner_way_water(SDL_Renderer *renderer, my_way *w, GHashTable *ways, GHa
         }*/
         if(!strcmp(tag_value,"coastline")){
           if ( !coastline) {
-            SDL_SetRenderDrawColor(renderer, 180, 208, 209, 255);
+            //fait
+            SDL_SetRenderDrawColor(renderer, 180, 174, 208, 208);
             SDL_RenderClear(renderer);
             coastline = 1;
           }
@@ -354,40 +356,52 @@ void dessiner_way_highway(SDL_Renderer *renderer, my_way *w, GHashTable *ways, G
             draw_line_with_width(renderer,w,nodes,5,254,254,254);
           }
           else if(!strcmp(tag_value,"pedestrian")){
-            draw_line_with_width(renderer,w,nodes,5,237,237,237);
+            //fait
+            draw_line_with_width(renderer,w,nodes,5,222,217,223);
           }
           else if(!strcmp(tag_value,"footway") || !strcmp(tag_value,"path")){
-            draw_line_with_width(renderer,w,nodes,2,248,147,136);
+            //fait
+            draw_line_with_width(renderer,w,nodes,2,250,135,122);
           }
           else if(!strcmp(tag_value,"motorway_link")){
-            draw_line_with_width(renderer,w,nodes,10,233,144,160);
+            //fait
+            draw_line_with_width(renderer,w,nodes,10,243,132,155);
           }
           else if(!strcmp(tag_value,"trunk_link")){
-            draw_line_with_width(renderer,w,nodes,13,251,178,154);
+            //fait
+            draw_line_with_width(renderer,w,nodes,13,255,176,147);
           }
           else if(!strcmp(tag_value,"living_street")){
-            draw_line_with_width(renderer,w,nodes,13,237,237,237);
+            //fait
+            draw_line_with_width(renderer,w,nodes,13,236,237,236);
           }
           else if(!strcmp(tag_value,"track")){
-            draw_line_with_width(renderer,w,nodes,2,172,131,39);
+            //fait
+            draw_line_with_width(renderer,w,nodes,2,171,139,25);
           }
           else if(!strcmp(tag_value,"bus_guideway")){
-            draw_line_with_width(renderer,w,nodes,4,100,100,255);
+            //fait
+            draw_line_with_width(renderer,w,nodes,4,142,142,249);
           }
           else if(!strcmp(tag_value,"raceway")){
-            draw_line_with_width(renderer,w,nodes,7,255,192,202);
+            //fait
+            draw_line_with_width(renderer,w,nodes,7,255,184,198);
           }
           else if(!strcmp(tag_value,"road")){
-            draw_line_with_width(renderer,w,nodes,2,221,221,221);
+            //fait
+            draw_line_with_width(renderer,w,nodes,2,220,220,220);
           }
           else if(!strcmp(tag_value,"bridleway")){
-            draw_line_with_width(renderer,w,nodes,2,73,161,72);
+            //fait
+            draw_line_with_width(renderer,w,nodes,2,137,192,133);
           }
           else if(!strcmp(tag_value,"steps")){
-            draw_line_with_width(renderer,w,nodes,5,252,119,102);
+            //fait
+            draw_line_with_width(renderer,w,nodes,5,251,152,136);
           }
           else if(!strcmp(tag_value,"cycleway")){
-            draw_line_with_width(renderer,w,nodes,2,155,154,245);
+            //fait
+            draw_line_with_width(renderer,w,nodes,2,113,113,249);
           }
         }
     }
@@ -409,19 +423,23 @@ void dessiner_way_highway_second(SDL_Renderer *renderer, my_way *w, GHashTable *
       char *tag_value = (char *)value;
       if(!strcmp(tag_key,"highway")){
           if(!strcmp(tag_value,"motorway")){
-            draw_line_with_width(renderer,w,nodes,10,233,144,160);
+            //fait
+            draw_line_with_width(renderer,w,nodes,10,243,132,154);
           }
           else if(!strcmp(tag_value,"trunk")){
-            draw_line_with_width(renderer,w,nodes,10,251,178,154);
+            //fait
+            draw_line_with_width(renderer,w,nodes,10,255,176,147);
           }
           if(!strcmp(tag_value,"primary") || !strcmp(tag_value,"primary_link")){
-            draw_line_with_width(renderer,w,nodes,10,236,152,154);
+            //fait
+            draw_line_with_width(renderer,w,nodes,10,254,221,155);
           }
           else if(!strcmp(tag_value,"secondary") || !strcmp(tag_value,"secondary_link")){
-            draw_line_with_width(renderer,w,nodes,10,254,215,165);
+            draw_line_with_width(renderer,w,nodes,10,239,255,183);
           }
           else if(!strcmp(tag_value,"tertiary") || !strcmp(tag_value,"tertiary_link")){
-            draw_line_with_width(renderer,w,nodes,10,255,255,179);
+            //fait
+            draw_line_with_width(renderer,w,nodes,10,245,245,245);
             //draw_line_with_width(renderer,ways[i],15,0,254,254);
           }
         }
@@ -450,19 +468,19 @@ void dessiner_way(SDL_Renderer *renderer, my_way *w, GHashTable *ways, GHashTabl
       char *tag_value = (char *)value;
       //if(!strcmp(tag_key,"highway")){
           /*if(!strcmp(tag_value,"motorway")){
-            draw_line_with_width(renderer,w,nodes,18,233,144,160);
+            draw_line_with_width(renderer,w,nodes,18,243,132,154);
           }
           else if(!strcmp(tag_value,"trunk")){
-            draw_line_with_width(renderer,w,nodes,18,251,178,154);
+            draw_line_with_width(renderer,w,nodes,18,255,176,147);
           }
           if(!strcmp(tag_value,"primary") || !strcmp(tag_value,"primary_link")){
-            draw_line_with_width(renderer,w,nodes,15,236,152,154);
+            draw_line_with_width(renderer,w,nodes,15,254,221,155);
           }
           else if(!strcmp(tag_value,"secondary") || !strcmp(tag_value,"secondary_link")){
-            draw_line_with_width(renderer,w,nodes,15,254,215,165);
+            draw_line_with_width(renderer,w,nodes,15,239,255,183);
           }
           else if(!strcmp(tag_value,"tertiary") || !strcmp(tag_value,"tertiary_link")){
-            draw_line_with_width(renderer,w,nodes,15,255,255,179);
+            draw_line_with_width(renderer,w,nodes,15,245,245,245);
             //draw_line_with_width(renderer,ways[i],15,0,254,254);
           }*/
           /*if(!strcmp(tag_value,"unclassified")){
@@ -481,10 +499,10 @@ void dessiner_way(SDL_Renderer *renderer, my_way *w, GHashTable *ways, GHashTabl
             draw_line_with_width(renderer,w,nodes,2,248,147,136);
           }
           else if(!strcmp(tag_value,"motorway_link")){
-            draw_line_with_width(renderer,w,nodes,10,233,144,160);
+            draw_line_with_width(renderer,w,nodes,10,243,132,154);
           }
           else if(!strcmp(tag_value,"trunk_link")){
-            draw_line_with_width(renderer,w,nodes,15,251,178,154);
+            draw_line_with_width(renderer,w,nodes,15,255,176,147);
           }
           else if(!strcmp(tag_value,"living_street")){
             draw_line_with_width(renderer,w,nodes,15,237,237,237);
@@ -540,7 +558,7 @@ void dessiner_way(SDL_Renderer *renderer, my_way *w, GHashTable *ways, GHashTabl
           if(!strcmp(tag_value,"water")){
             short *tab_x = get_tab_x(w,nodes);
             short *tab_y = get_tab_y(w,nodes);
-            filledPolygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 180, 208, 209, 255);
+            filledPolygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 180,174,208,208);
             polygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);
           }
           //else if(!strcmp(tag_value,"coastline")){
@@ -549,6 +567,12 @@ void dessiner_way(SDL_Renderer *renderer, my_way *w, GHashTable *ways, GHashTabl
             //filledPolygonRGBA(renderer, tab_x, tab_y, ways[i]->count_nodes, 180, 208, 209, 255);
           //}
         }
+        //*******************************************************************
+      //  **********************************************************************
+        //**********************************************************************
+      //  ************************************************************************
+      //*******************************************************************************
+
         else if(!strcmp(tag_key,"landuse") || !strcmp(tag_key,"leisure")){
           if(!strcmp(tag_value,"grass")){
             short *tab_x = get_tab_x(w,nodes);
