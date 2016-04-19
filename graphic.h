@@ -9,7 +9,7 @@
 
 void draw_line_with_width(SDL_Renderer *renderer, my_way *way, GHashTable *nodes, uint8_t w, uint8_t r, uint8_t g, uint8_t b);
 void dessiner_ways(SDL_Renderer *renderer, GHashTable *ways, GHashTable *nodes);
-void rendererMap(GHashTable *ways_water, GHashTable *hash_ways, GHashTable *hash_nodes, GHashTable *hash_relations);
+void rendererMap(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTable *hash_relations);
 void dessiner_hash_ways(SDL_Renderer *renderer, GHashTable *ways, GHashTable *nodes);
 void dessiner_relations(SDL_Renderer *renderer, GHashTable *relations, GHashTable *ways, GHashTable *nodes);
 void dessiner_une_relation(SDL_Renderer *renderer, my_relation *rel, GHashTable *relations, GHashTable *ways, GHashTable *nodes);
