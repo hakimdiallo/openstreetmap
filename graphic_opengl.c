@@ -1,6 +1,8 @@
 #include "graphic_opengl.h"
 
 int coast_line = 0;
+int cameraX = 0;
+int cameraY = 0;
 
 void draw_line(my_way *way, GHashTable *nodes, GLfloat width, GLdouble depth, GLubyte r, GLubyte g, GLubyte b){
   glColor3ub(r,g,b); //Couleur de la ligne
@@ -207,61 +209,89 @@ void draw_ways(GHashTable *hash_ways, GHashTable *hash_nodes){
 void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTable *hash_relations){
   SDL_Window *win = NULL;
   SDL_GLContext contextOpenGL = NULL;
-
-
   SDL_Init(SDL_INIT_VIDEO);
-
   // Version d'OpenGL
-
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-
-	// Double Buffer
-
+	// Double Buffer rt profondeur
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-
   win = SDL_CreateWindow("MY OSM RENDERER", SDL_WINDOWPOS_CENTERED , SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
   if (win == 0) {
 			printf("Erreur lors de la création de la fenêtre %s\n", SDL_GetError());
 			SDL_DestroyWindow(win);
       SDL_Quit();
 		}
-
 		// Création du contexte OpenGL
 	 	contextOpenGL = SDL_GL_CreateContext(win);
-
 		if(contextOpenGL == 0){
 			printf("%s\n", SDL_GetError());
 			SDL_DestroyWindow(win);
       SDL_Quit();
 		}
+  //Repère en bas à gauche et mesure de dessin en pixel
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity( );
+  glPushMatrix();
+  gluOrtho2D(0,WIDTH,0,HEIGHT);
 
-    //Repère en bas à gauche et mesure de dessin en pixel
-		glMatrixMode( GL_PROJECTION );
-		glLoadIdentity( );
-    gluOrtho2D(0,WIDTH,0,HEIGHT);
-    //activation de la profndeur des dessins
-    glEnable(GL_DEPTH_TEST);
-    //activation des pointillés
-    glEnable(GL_LINE_STIPPLE );
-    glClearColor(221/255.0,221/255.0,221/255.0,0);
+  //activation de la profondeur des dessins
+  glEnable(GL_DEPTH_TEST);
+  //activation des pointillés
+  glEnable(GL_LINE_STIPPLE );
+  glClearColor(221/255.0,221/255.0,221/255.0,0);
 	printf("draw ...\n");
 	int continuer = 1;
+  int x=0, y=0;
+  int oldEcranW ,  oldEcranH, ecranW, ecranH;
+  SDL_GetWindowSize(win, &oldEcranW, &oldEcranH);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  //glClearColor(221%255,221%255,221%255,0.0);
+  draw_ways(hash_ways,hash_nodes);
+
+  glFlush();
+  SDL_GL_SwapWindow(win);
   while (continuer) {
-      SDL_Event event;
-      SDL_WaitEvent(&event);
-      switch (event.type) {
-      	case SDL_QUIT:
-					continuer = 0;
-					break;
-      }
+  	SDL_GetWindowSize(win, &ecranW, &ecranH); //on recupère la largeur et la hauteur de la fenêtre
+    if((ecranW != oldEcranW) || (ecranH != oldEcranH) ){
+      glMatrixMode( GL_PROJECTION );
+      glPopMatrix();
+      glLoadIdentity( );
+      gluOrtho2D(0,ecranW,0,ecranH);
+      glPushMatrix();
+      glViewport( 0.f, 0.f, ecranW, ecranH );
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       //glClearColor(221%255,221%255,221%255,0.0);
     	draw_ways(hash_ways,hash_nodes);
 
       glFlush();
 		 	SDL_GL_SwapWindow(win);
+      oldEcranW  = ecranW;  oldEcranH = ecranH;
+    }
+      //Evenement sdl
+      if(SDL_QuitRequested()){
+        continuer = 0;
+        break;
+      }
+      SDL_PumpEvents();
+      if(SDL_GetRelativeMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_LEFT) & ((x != 0) || (y != 0))){
+        //Initialize Modelview Matrix
+        cameraX += x;
+        cameraY -= y;
+        glMatrixMode( GL_MODELVIEW );
+        glLoadIdentity();
+        //bouge la caméra
+        glTranslatef( cameraX, cameraY, 0.f );
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //glClearColor(221%255,221%255,221%255,0.0);
+      	draw_ways(hash_ways,hash_nodes);
+
+        glFlush();
+  		 	SDL_GL_SwapWindow(win);
+        printf("Le bouton gauche est appuyé\n");
+        printf("camerax :%d cameray: %d\n", cameraX, cameraY);
+      }
+
   }
   glDisable(GL_LINE_STIPPLE);
 	glDisable(GL_DEPTH_TEST);
