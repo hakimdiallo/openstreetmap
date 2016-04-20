@@ -16,6 +16,8 @@
 
 //Dessine une ligne avec une couleur , une largeur et une profondeur
 void draw_line(my_way *way, GHashTable *nodes, GLfloat width, GLdouble depth, GLubyte r, GLubyte g, GLubyte b);
+//Dessine une ligne en pointillé
+void draw_line_stipple(my_way *way, GHashTable *nodes, GLfloat width, GLdouble depth, GLubyte r, GLubyte g, GLubyte b);
 
 void draw_polygon(my_way *way, GHashTable *nodes, GLdouble depth, GLubyte r, GLubyte g, GLubyte b);
 

@@ -15,6 +15,21 @@ void draw_line(my_way *way, GHashTable *nodes, GLfloat width, GLdouble depth, GL
   glEnd();
 }
 
+void draw_line_stipple(my_way *way, GHashTable *nodes, GLfloat width, GLdouble depth, GLubyte r, GLubyte g, GLubyte b){
+  glColor3ub(r,g,b); //Couleur de la ligne
+  glLineWidth( width );//Change la largeur d'une ligne
+  glLineStipple(1,1);
+  glBegin(GL_LINE_STRIP);//option pour relier les sommets du premier au dernier
+    int size = g_slist_length(way->nodes);
+    int i;
+    for (i = 0; i < size; i++){
+      my_node *node1 = g_hash_table_lookup(nodes, g_slist_nth_data(way->nodes, i));
+      glVertex3d((GLdouble)(node1->lon),(GLdouble)(node1->lat),depth);
+    }
+  glEnd();
+}
+
+
 void draw_polygon(my_way *way, GHashTable *nodes, GLdouble depth, GLubyte r, GLubyte g, GLubyte b){
   glColor3ub(r,g,b); //Couleur de la ligne
   glBegin(GL_POLYGON);
@@ -228,7 +243,9 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
     gluOrtho2D(0,WIDTH,0,HEIGHT);
     //activation de la profndeur des dessins
     glEnable(GL_DEPTH_TEST);
-
+    //activation des pointillés
+    glEnable(GL_LINE_STIPPLE );
+    glClearColor(221/255.0,221/255.0,221/255.0,0);
 	printf("draw ...\n");
 	int continuer = 1;
   while (continuer) {
@@ -246,6 +263,8 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
       glFlush();
 		 	SDL_GL_SwapWindow(win);
   }
+  glDisable(GL_LINE_STIPPLE);
+	glDisable(GL_DEPTH_TEST);
   SDL_GL_DeleteContext(contextOpenGL);
 	SDL_DestroyWindow(win);
 	SDL_Quit();
