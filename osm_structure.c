@@ -6,14 +6,14 @@
 my_way* init_my_way(){
   my_way *way  = malloc(sizeof(my_way));
   way->nodes = NULL;
-  way->tag = g_hash_table_new( g_str_hash, g_str_equal);
+  way->tag = g_hash_table_new_full( g_str_hash, g_str_equal, free, free);
   way->drawn = 0;
   return way;
 }
 
 my_node* init_my_node(){
   my_node *node = malloc(sizeof(my_node));
-  node->tag = g_hash_table_new( g_str_hash, g_str_equal);
+  node->tag = g_hash_table_new_full ( g_str_hash, g_str_equal, free, free);
   return node;
 }
 
@@ -29,7 +29,7 @@ my_relation* init_my_relation(){
   rel->ways = NULL;
   rel->nodes = NULL;
   rel->relations = NULL;
-  rel->tags = g_hash_table_new( g_str_hash, g_str_equal);
+  rel->tags = g_hash_table_new_full( g_str_hash, g_str_equal, free, free);
   return rel;
 }
 
@@ -76,10 +76,12 @@ void free_my_way(my_way *way){
 
 void free_my_ways(GHashTable *ways){
   GHashTableIter iter;
+  gpointer key;
   gpointer value;
   g_hash_table_iter_init(&iter, ways);
-  while(g_hash_table_iter_next(&iter, NULL, &value)) {
+  while(g_hash_table_iter_next(&iter, &key, &value)) {
        free_my_way(value);
+      // free(key);
   }
   g_hash_table_destroy(ways);
 }
@@ -90,7 +92,7 @@ void free_my_nodes(GHashTable *nodes){
   gpointer value;
   g_hash_table_iter_init(&iter, nodes);
   while(g_hash_table_iter_next(&iter, NULL, &value)) {
-       free_my_way(value);
+       free_my_node(value);
   }
   g_hash_table_destroy(nodes);
 }

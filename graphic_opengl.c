@@ -3,6 +3,7 @@
 int coast_line = 0;
 int cameraX = 0;
 int cameraY = 0;
+float zoom = 1.0;
 
 void draw_line(my_way *way, GHashTable *nodes, GLfloat width, GLdouble depth, GLubyte r, GLubyte g, GLubyte b){
   glColor3ub(r,g,b); //Couleur de la ligne
@@ -206,17 +207,37 @@ void draw_ways(GHashTable *hash_ways, GHashTable *hash_nodes){
   }
 }
 
-void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTable *hash_relations){
-  SDL_Window *win = NULL;
-  SDL_GLContext contextOpenGL = NULL;
-  SDL_Init(SDL_INIT_VIDEO);
+void init_opengl(){
   // Version d'OpenGL
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 	// Double Buffer rt profondeur
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+
+  //Repère en bas au centre et mesure de dessin en pixel
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity( );
+  glPushMatrix();
+  gluOrtho2D(-WIDTH/2,WIDTH/2,-HEIGHT/2,HEIGHT/2);
+
+  glMatrixMode( GL_MODELVIEW );
+  glLoadIdentity();
+  //activation de la profondeur des dessins
+  glEnable(GL_DEPTH_TEST);
+  //activation des pointillés
+  glEnable(GL_LINE_STIPPLE );
+  glClearColor(221%255,221%255,221%255,0.0);
+}
+
+
+void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTable *hash_relations){
+  SDL_Window *win = NULL;
+  SDL_GLContext contextOpenGL = NULL;
+  SDL_Init(SDL_INIT_VIDEO);
+
   win = SDL_CreateWindow("MY OSM RENDERER", SDL_WINDOWPOS_CENTERED , SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+
   if (win == 0) {
 			printf("Erreur lors de la création de la fenêtre %s\n", SDL_GetError());
 			SDL_DestroyWindow(win);
@@ -229,43 +250,32 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
 			SDL_DestroyWindow(win);
       SDL_Quit();
 		}
-  //Repère en bas à gauche et mesure de dessin en pixel
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity( );
-  glPushMatrix();
-  gluOrtho2D(0,WIDTH,0,HEIGHT);
 
-  //activation de la profondeur des dessins
-  glEnable(GL_DEPTH_TEST);
-  //activation des pointillés
-  glEnable(GL_LINE_STIPPLE );
-  glClearColor(221/255.0,221/255.0,221/255.0,0);
-	printf("draw ...\n");
-	int continuer = 1;
+
   int x=0, y=0;
   int oldEcranW ,  oldEcranH, ecranW, ecranH;
   SDL_GetWindowSize(win, &oldEcranW, &oldEcranH);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  //glClearColor(221%255,221%255,221%255,0.0);
-  draw_ways(hash_ways,hash_nodes);
 
+  init_opengl();
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  draw_ways(hash_ways,hash_nodes);
   glFlush();
   SDL_GL_SwapWindow(win);
+
+  int continuer = 1;
   while (continuer) {
   	SDL_GetWindowSize(win, &ecranW, &ecranH); //on recupère la largeur et la hauteur de la fenêtre
     if((ecranW != oldEcranW) || (ecranH != oldEcranH) ){
       glMatrixMode( GL_PROJECTION );
       glPopMatrix();
       glLoadIdentity( );
-      gluOrtho2D(0,ecranW,0,ecranH);
-      glPushMatrix();
+      gluOrtho2D(-ecranW/2,ecranW/2,-ecranH/2,ecranH/2);
       glViewport( 0.f, 0.f, ecranW, ecranH );
+      glPushMatrix();
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      //glClearColor(221%255,221%255,221%255,0.0);
     	draw_ways(hash_ways,hash_nodes);
-
       glFlush();
-		 	SDL_GL_SwapWindow(win);
+      SDL_GL_SwapWindow(win);
       oldEcranW  = ecranW;  oldEcranH = ecranH;
     }
       //Evenement sdl
@@ -273,23 +283,65 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
         continuer = 0;
         break;
       }
+
       SDL_PumpEvents();
+      //Scrooling avec un clic et un déplacement de la souris
       if(SDL_GetRelativeMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_LEFT) & ((x != 0) || (y != 0))){
         //Initialize Modelview Matrix
         cameraX += x;
         cameraY -= y;
         glMatrixMode( GL_MODELVIEW );
+        glPopMatrix();
         glLoadIdentity();
-        //bouge la caméra
-        glTranslatef( cameraX, cameraY, 0.f );
+        glScalef( zoom, zoom, 0 );
+        glTranslatef( cameraX , cameraY, 0.f );
+        glPushMatrix();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        //glClearColor(221%255,221%255,221%255,0.0);
       	draw_ways(hash_ways,hash_nodes);
-
         glFlush();
   		 	SDL_GL_SwapWindow(win);
         printf("Le bouton gauche est appuyé\n");
         printf("camerax :%d cameray: %d\n", cameraX, cameraY);
+      }
+
+      //zoom / dezoom avec le clavier
+      const Uint8 *state = SDL_GetKeyboardState(NULL);
+      //dezoom avec touche -
+      if (state[SDL_SCANCODE_KP_PLUS] ) {
+        zoom += ZOOM;
+        if (zoom > MAX_ZOOM) {
+          zoom = MAX_ZOOM;
+        }
+        printf("%f\n", zoom);
+        glMatrixMode( GL_MODELVIEW );
+        glPopMatrix();
+        glLoadIdentity();
+        glTranslatef( cameraX*zoom, cameraY*zoom, 0.f );
+        glScalef( zoom, zoom, 0 );
+        glPushMatrix();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      	draw_ways(hash_ways,hash_nodes);
+        glFlush();
+  		 	SDL_GL_SwapWindow(win);
+      }
+      //zoom avec touche +
+      if (state[SDL_SCANCODE_KP_MINUS] ) {
+        zoom -= ZOOM;
+        if(zoom < 0)
+          zoom = -zoom;
+        if(zoom < MIN_ZOOM)
+          zoom = MIN_ZOOM;
+        printf("%f\n", zoom);
+        glMatrixMode( GL_MODELVIEW );
+        glPopMatrix();
+        glLoadIdentity();
+        glTranslatef( cameraX*zoom, cameraY*zoom, 0.f );
+        glScalef( zoom, zoom, 0 );
+        glPushMatrix();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      	draw_ways( hash_ways,hash_nodes);
+        glFlush();
+  		 	SDL_GL_SwapWindow(win);
       }
 
   }
