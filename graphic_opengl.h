@@ -13,6 +13,8 @@
 #define MAX_ZOOM 30
 #define MIN_ZOOM 0.25
 
+
+#define HIGHWAY_WIDTH 5.0f
 #define WATER_DEPTH 0.0
 #define BULDING_DEPTH 0.1
 #define INNER_DEPTH 0.9
