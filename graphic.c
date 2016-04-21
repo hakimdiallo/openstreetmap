@@ -351,7 +351,8 @@ void dessiner_way(SDL_Renderer *renderer, my_way *w, GHashTable *ways, GHashTabl
           else if(!strcmp(tag_value,"riverbank")){
             short *tab_x = get_tab_x(w,nodes);
             short *tab_y = get_tab_y(w,nodes);
-            filledPolygonRGBA(renderer, tab_x, tab_y,g_slist_length(w->nodes), 181,208,208, 255);
+            //fait
+            filledPolygonRGBA(renderer, tab_x, tab_y,g_slist_length(w->nodes), 174,208,208, 255);
             //draw_line_with_width(renderer,ways[i],50,180,208,209);
           }
           else if(!strcmp(tag_value,"stream")){
@@ -362,49 +363,57 @@ void dessiner_way(SDL_Renderer *renderer, my_way *w, GHashTable *ways, GHashTabl
           if(!strcmp(tag_value,"water")){
             short *tab_x = get_tab_x(w,nodes);
             short *tab_y = get_tab_y(w,nodes);
-            filledPolygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 180, 208, 209, 255);
-            polygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);
+            //fait
+            filledPolygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 174,208,208, 255);
+            polygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 174,208,208, 255);
           }
           else if(!strcmp(tag_value,"coastline")){
             if ( !coastline) {
-              SDL_SetRenderDrawColor(renderer, 180, 208, 209, 255);
+              //fait
+              SDL_SetRenderDrawColor(renderer,174,208,208, 255);
               SDL_RenderClear(renderer);
               coastline = 1;
             }
             short *tab_x = get_tab_x(w,nodes);
             short *tab_y = get_tab_y(w,nodes);
-            filledPolygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 221, 221, 221, 255);
+            //fait
+            filledPolygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 174,208,208, 255);
           }
         }
         else if(!strcmp(tag_key,"landuse") || !strcmp(tag_key,"leisure")){
           if(!strcmp(tag_value,"grass")){
             short *tab_x = get_tab_x(w,nodes);
             short *tab_y = get_tab_y(w,nodes);
-            filledPolygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 207, 237, 165, 255);
-            polygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);
+            //fait
+            filledPolygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes),192,251,162, 255);
+            polygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 192,251,162, 255);
           }
           else if(!strcmp(tag_value,"forest")){
             short *tab_x = get_tab_x(w,nodes);
             short *tab_y = get_tab_y(w,nodes);
-            filledPolygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 157, 202, 138, 255);
-            polygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);
+            //fait
+            filledPolygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 139,214,137, 255);
+            polygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 139,214,137, 255);
           }
           else if(!strcmp(tag_value,"park")){
             short *tab_x = get_tab_x(w,nodes);
             short *tab_y = get_tab_y(w,nodes);
-            filledPolygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 205, 247, 201, 255);
-            polygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);
+            //fait
+            filledPolygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 205,247,201, 255);
+            polygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 205,247,201, 255);
           }
           else if(!strcmp(tag_value,"garden")){
             short *tab_x = get_tab_x(w,nodes);
             short *tab_y = get_tab_y(w,nodes);
-            filledPolygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 207, 236, 168, 255);
-            polygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);
+            //fait
+            filledPolygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 207,236,168, 255);
+            polygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 207,236,168, 255);
           }
           else if(!strcmp(tag_value,"pitch")){
             short *tab_x = get_tab_x(w,nodes);
             short *tab_y = get_tab_y(w,nodes);
-            filledPolygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 138, 211, 175, 255);
+            //fait 
+            filledPolygonRGBA(renderer, tab_x, tab_y, g_slist_length(w->nodes), 138,211,175, 255);
           }
         }
         else if(!strcmp(tag_key,"area")){
