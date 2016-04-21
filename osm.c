@@ -95,7 +95,7 @@ void setNodeInformations(GHashTable *nodes, xmlNodePtr noeud, my_bounds *bound){
   double cor = fmax( ((bound->maxlat - bound->minlat) / HEIGHT), ((bound->maxlon - bound->minlon) / WIDTH) );
   n->lat = calcul_coor_y( merc_y(strtod((const char *)lat,NULL)), bound ) ;
   n->lon = calcul_coor_x( merc_x(strtod((const char *)lon,NULL)), bound ) ;
-  //printf("lon%f\tlat%f\n", n->lon, n->lat);
+  printf("lon%f\tlat%f\n", n->lon, n->lat);
   //n->lat = calcul_coor_y( (RAYON_TERRE*sin(strtod((const char *)lat,NULL)) * sqrt(2)), bound );
   //n->lon = calcul_coor_x( ((RAYON_TERRE*M_PI*strtod((const char *)lon,NULL))/(180 * sqrt(2))), bound );
   xmlNodePtr child = noeud->children;
@@ -173,14 +173,18 @@ void setRelationInformations(GHashTable *relations, xmlNodePtr noeud){
 //Calcule les coordonnées y sur la fenêtre
 double calcul_coor_y(double d, my_bounds *bn){
   double height = bn->maxlat - bn->minlat ;
-  if(opengl)
-    return ( height * ((d - bn->minlat)/(bn->maxlat - bn->minlat)) );
-  else
-    return height - ( height * ((d - bn->minlat)/(bn->maxlat - bn->minlat)) );
+  //if(opengl)
+    //return ( height * ((d - bn->minlat)/(bn->maxlat - bn->minlat)) );
+  return (-height/2) + (height * (d - bn->minlat)/(bn->maxlat - bn->minlat));
+  //else
+    //return height - ( height * ((d - bn->minlat)/(bn->maxlat - bn->minlat)) );
+    //return bn->minlon + ((bn->maxlon - bn->minlon) * (d - bn->minlat)/(bn->maxlat - bn->minlat));
+
 }
 
 //Calcule les coordonnées x sur la fenêtre
 double calcul_coor_x(double d, my_bounds *bn){
   double width = bn->maxlon - bn->minlon ;
-  return ( width * ((d - bn->minlon)/(bn->maxlon - bn->minlon)) );
+  //return ( width * ((d - bn->minlon)/(bn->maxlon - bn->minlon)) );
+  return -(width/2) + (width * ((d - bn->minlon)/(bn->maxlon - bn->minlon)));
 }
