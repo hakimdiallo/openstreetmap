@@ -9,13 +9,17 @@
 #include <SDL_opengl.h>
 #include <GL/glut.h>
 
+#define ZOOM 0.2f
+#define MAX_ZOOM 30
+#define MIN_ZOOM 0.25
+
 #define WATER_DEPTH 0.0
 #define BULDING_DEPTH 0.1
 #define INNER_DEPTH 0.9
 #define HIGHWAY_DEPTH 1.0
 
 //Dessine une ligne avec une couleur , une largeur et une profondeur
-void draw_line(my_way *way, GHashTable *nodes, GLfloat width, GLdouble depth, GLubyte r, GLubyte g, GLubyte b);
+void draw_line( my_way *way, GHashTable *nodes, GLfloat width, GLdouble depth, GLubyte r, GLubyte g, GLubyte b);
 //Dessine une ligne en pointillé
 void draw_line_stipple(my_way *way, GHashTable *nodes, GLfloat width, GLdouble depth, GLubyte r, GLubyte g, GLubyte b);
 

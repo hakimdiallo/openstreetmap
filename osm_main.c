@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
 	GHashTable *hash_relations;
 	hash_relations = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);
 	hash_nodes = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);//initialisation de l'hashtable des nodes
-	hash_ways = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, g_free);//initialisation de l'hashtable des ways
+	hash_ways = g_hash_table_new_full( g_str_hash, g_str_equal, NULL, NULL);//initialisation de l'hashtable des ways
 	bound = init_my_bounds();
 	parse_file_v(hash_relations, hash_ways, hash_nodes, bound, argv[1]);
 
@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
 		rendererMap_opengl(hash_ways, hash_nodes, hash_relations);
 	else
 		rendererMap(hash_ways, hash_nodes, hash_relations);
-	g_hash_table_destroy(hash_ways);
+	free_my_ways(hash_ways);
 	g_hash_table_destroy(hash_nodes);
 	g_hash_table_destroy(hash_relations);
 	free_my_bound(bound);
