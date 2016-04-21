@@ -343,6 +343,19 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
         glFlush();
   		 	SDL_GL_SwapWindow(win);
       }
+      //LAa touche home poutr revenir à la position initiale
+      if (state[SDL_SCANCODE_HOME] ) {
+        glMatrixMode( GL_MODELVIEW );
+        glLoadIdentity();
+        glPushMatrix();
+        zoom = 1;
+        cameraX = 0;
+        cameraY = 0;
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      	draw_ways( hash_ways,hash_nodes);
+        glFlush();
+  		 	SDL_GL_SwapWindow(win);
+      }
 
   }
   glDisable(GL_LINE_STIPPLE);
