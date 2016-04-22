@@ -66,26 +66,26 @@ void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes){
       char *tag_value = (char *)value;
       if(!strcmp(tag_key,"highway")){
           if(!strcmp(tag_value,"motorway")){
-            draw_line(w,nodes,9,HIGHWAY_DEPTH,233,144,160);
+            draw_line(w,nodes,HIGHWAY_WIDTH,HIGHWAY_DEPTH,233,144,160);
           }
           else if(!strcmp(tag_value,"trunk")){
-            draw_line(w,nodes,9,HIGHWAY_DEPTH,251,178,154);
+            draw_line(w,nodes,HIGHWAY_WIDTH,HIGHWAY_DEPTH,251,178,154);
           }
           else if(!strcmp(tag_value,"primary") || !strcmp(tag_value,"primary_link")){
-            draw_line(w,nodes,9,HIGHWAY_DEPTH,236,152,154);
+            draw_line(w,nodes,HIGHWAY_WIDTH,HIGHWAY_DEPTH,236,152,154);
           }
           else if(!strcmp(tag_value,"secondary") || !strcmp(tag_value,"secondary_link")){
-            draw_line(w,nodes,9,HIGHWAY_DEPTH,254,215,165);
+            draw_line(w,nodes,HIGHWAY_WIDTH,HIGHWAY_DEPTH,254,215,165);
           }
           else if(!strcmp(tag_value,"tertiary") || !strcmp(tag_value,"tertiary_link")){
-            draw_line(w,nodes,9,HIGHWAY_DEPTH,255,255,179);
+            draw_line(w,nodes,HIGHWAY_WIDTH,HIGHWAY_DEPTH,255,255,179);
             //draw_line(ways[i],15,0,254,254);
           }
           else if(!strcmp(tag_value,"unclassified")){
-            draw_line(w,nodes,9,HIGHWAY_DEPTH,254,254,254);
+            draw_line(w,nodes,HIGHWAY_WIDTH,HIGHWAY_DEPTH,254,254,254);
           }
           else if(!strcmp(tag_value,"residential")){
-            draw_line(w,nodes,9,HIGHWAY_DEPTH,254,254,254);
+            draw_line(w,nodes,HIGHWAY_WIDTH,HIGHWAY_DEPTH,254,254,254);
           }
           else if(!strcmp(tag_value,"service")){
             draw_line(w,nodes,5,HIGHWAY_DEPTH,254,254,254);
@@ -227,7 +227,8 @@ void init_opengl(){
   glEnable(GL_DEPTH_TEST);
   //activation des pointillés
   glEnable(GL_LINE_STIPPLE );
-  glClearColor(221%255,221%255,221%255,0.0);
+  glEnable( GL_LINE_SMOOTH );
+  glClearColor(221/255.0,221/255.0,221/255.0,0.0);
 }
 
 
@@ -360,6 +361,7 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
   }
   glDisable(GL_LINE_STIPPLE);
 	glDisable(GL_DEPTH_TEST);
+  glDisable( GL_LINE_SMOOTH );
   SDL_GL_DeleteContext(contextOpenGL);
 	SDL_DestroyWindow(win);
 	SDL_Quit();

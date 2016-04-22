@@ -93,8 +93,8 @@ void setNodeInformations(GHashTable *nodes, xmlNodePtr noeud, my_bounds *bound){
   //n->lon = calcul_coor_x( ( merc_y(strtod((const char *)lon,NULL)) ) / 0.784308, bound);
   //printf("lon%f\tlat%f\n", n->lon, n->lat);
   double cor = fmax( ((bound->maxlat - bound->minlat) / HEIGHT), ((bound->maxlon - bound->minlon) / WIDTH) );
-  n->lat = calcul_coor_y( merc_y(strtod((const char *)lat,NULL)), bound ) ;
-  n->lon = calcul_coor_x( merc_x(strtod((const char *)lon,NULL)), bound ) ;
+  n->lat = calcul_coor_y( merc_y(strtod((const char *)lat,NULL)), bound ) / cor;
+  n->lon = calcul_coor_x( merc_x(strtod((const char *)lon,NULL)), bound ) / cor;
   printf("lon%f\tlat%f\n", n->lon, n->lat);
   //n->lat = calcul_coor_y( (RAYON_TERRE*sin(strtod((const char *)lat,NULL)) * sqrt(2)), bound );
   //n->lon = calcul_coor_x( ((RAYON_TERRE*M_PI*strtod((const char *)lon,NULL))/(180 * sqrt(2))), bound );
