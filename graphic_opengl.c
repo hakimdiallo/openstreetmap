@@ -348,7 +348,6 @@ void init_opengl(){
   //activation de la profondeur des dessins
   glEnable(GL_DEPTH_TEST);
   //activation des pointillés
-  //glEnable(GL_LINE_STIPPLE );
   glEnable( GL_LINE_SMOOTH );
   glClearColor(221/255.0,221/255.0,221/255.0,0.0);
 }
@@ -417,7 +416,7 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
         glMatrixMode( GL_MODELVIEW );
         glPopMatrix();
         glLoadIdentity();
-        glScalef( zoom, zoom, 0 );
+        glScalef( zoom, zoom, 1 );
         glTranslatef( cameraX , cameraY, 0.f );
         glPushMatrix();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -442,7 +441,7 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
         glPopMatrix();
         glLoadIdentity();
         glTranslatef( cameraX*zoom, cameraY*zoom, 0.f );
-        glScalef( zoom, zoom, 0 );
+        glScalef( zoom, zoom, 1 );
         glPushMatrix();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         draw_relations(hash_relations,hash_ways,hash_nodes);
@@ -462,7 +461,7 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
         glPopMatrix();
         glLoadIdentity();
         glTranslatef( cameraX*zoom, cameraY*zoom, 0.f );
-        glScalef( zoom, zoom, 0 );
+        glScalef( zoom, zoom, 1 );
         glPushMatrix();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         draw_relations(hash_relations,hash_ways,hash_nodes);
