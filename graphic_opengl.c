@@ -214,7 +214,7 @@ void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes){
             draw_line(w,nodes,2,LANDUSE_DEPTH, 175, 175, 175);
           }
           else if(!strcmp(tag_value,"residential")){
-            draw_line(w,nodes,1.2f,LANDUSE_DEPTH, 218, 218, 218);
+            //draw_line(w,nodes,1.2f,LANDUSE_DEPTH, 218, 218, 218);
           }
         }
         else if(!strcmp(tag_key,"area")){
@@ -224,15 +224,13 @@ void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes){
             printf("area: %s\n",tag_value);
           }
         }
-        else if(!strcmp(tag_key,"network")){
-          if(!strcmp(tag_value,"RATP")){
-            draw_line(w,nodes,1,HIGHWAY_DEPTH, 218, 218, 218);
-          }else{
-            printf("area: %s\n",tag_value);
-          }
-        }
         else if(!strcmp(tag_key,"name")){
           //write_name(w,nodes,tag_value);
+        }
+        else if(!strcmp(tag_key,"network")){
+          if(!strcmp(tag_value,"RATP")){
+            draw_line_stipple(w,nodes,2,0.9, 255, 0, 0);
+          }
         }
     }
     if ( strcmp(w->at.id,"") ){
@@ -258,6 +256,40 @@ void draw_way_relation(GSList *list, GHashTable *hash_ways, GHashTable *hash_nod
   }
 }
 
+my_way *set_way_outer(my_relation *rel, GHashTable *hash_ways){
+  my_way *way = init_my_way();
+  int i;
+  int count = g_slist_length(rel->ways_outer);
+  for (i = 0; i < count; i++) {
+    my_way *w = (my_way *)g_hash_table_lookup(hash_ways,g_slist_nth_data(rel->ways_outer,i));
+    if ( w != NULL ) {
+      int j;
+      int size = g_slist_length(w->nodes);
+      for (j = 0; j < size; j++) {
+        add_node_my_way(way,g_slist_nth_data(w->nodes,j));
+      }
+    }
+  }
+  strcpy(way->at.id,"");
+  way->tag = rel->tags;
+  return way;
+}
+
+my_way *set_way_node(my_relation *rel, GHashTable *hash_ways, GHashTable *hash_nodes){
+  my_way *way = init_my_way();
+  int i;
+  int count = g_slist_length(rel->nodes);
+  for (i = 0; i < count; i++) {
+    char *idnode = g_slist_nth_data(rel->nodes,i);
+    my_node *node = g_hash_table_lookup(hash_nodes,idnode);
+    if( node != NULL )
+      add_node_my_way(way,idnode);
+  }
+  strcpy(way->at.id,"");
+  way->tag = rel->tags;
+  return way;
+}
+
 void draw_one_relation(my_relation *rel, GHashTable *hash_relations, GHashTable *hash_ways, GHashTable *hash_nodes){
   //if ( !(rel->drawn) ) {
     if ( (rel->relations) != NULL ){
@@ -280,21 +312,7 @@ void draw_one_relation(my_relation *rel, GHashTable *hash_relations, GHashTable 
     }
     if ( rel->ways_outer != NULL && g_slist_length(rel->ways_outer) > 0 ){
       if ( rel->ways_inner == NULL || g_slist_length(rel->ways_inner) == 0 ){
-        my_way *way = init_my_way();
-        int i;
-        int count = g_slist_length(rel->ways_outer);
-        for (i = 0; i < count; i++) {
-          my_way *w = (my_way *)g_hash_table_lookup(hash_ways,g_slist_nth_data(rel->ways_outer,i));
-          if ( w != NULL ) {
-            int j;
-            int size = g_slist_length(w->nodes);
-            for (j = 0; j < size; j++) {
-              add_node_my_way(way,g_slist_nth_data(w->nodes,j));
-            }
-          }
-        }
-        strcpy(way->at.id,"");
-        way->tag = rel->tags;
+        my_way *way = set_way_outer(rel,hash_ways);
         draw_way(way,hash_ways,hash_nodes);
       }else {
         draw_way_relation(rel->ways_outer,hash_ways, hash_nodes);
@@ -307,9 +325,9 @@ void draw_one_relation(my_relation *rel, GHashTable *hash_relations, GHashTable 
       draw_way_relation(rel->ways,hash_ways,hash_nodes);
     }
     if ( rel->nodes != NULL && g_slist_length(rel->nodes) > 0 ){
-      /* code */
+      my_way *way = set_way_node(rel,hash_ways,hash_nodes);
+      draw_way(way,hash_ways,hash_nodes);
     }
-  //}
 }
 
 void draw_relations(GHashTable *relations, GHashTable *ways, GHashTable *nodes){
