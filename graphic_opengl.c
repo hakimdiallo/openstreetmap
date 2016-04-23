@@ -189,36 +189,44 @@ void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes){
               glClearColor(174/255.0,208/255.0,208/255.0,0.0);
               coast_line = 1;
             }
-            //draw_polygon(w,nodes,WATER_DEPTH, 221, 221, 221);
+            draw_polygon(w,nodes,WATER_DEPTH, 221, 221, 221);
           }
         }
         else if(!strcmp(tag_key,"landuse") || !strcmp(tag_key,"leisure")){
           if(!strcmp(tag_value,"grass")){
             draw_polygon(w,nodes,LANDUSE_DEPTH, 207, 237, 165);
-            //polygonRGBA( tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);
+            draw_line(w,nodes,2,LANDUSE_DEPTH, 175, 175, 175);
           }
           else if(!strcmp(tag_value,"forest")){
             draw_polygon(w,nodes,LANDUSE_DEPTH, 157, 202, 138);
-            //polygonRGBA( tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);
+            draw_line(w,nodes,2,LANDUSE_DEPTH, 175, 175, 175);
           }
           else if(!strcmp(tag_value,"park")){
             draw_polygon(w,nodes,LANDUSE_DEPTH, 205, 247, 201);
-            //polygonRGBA( tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);
+            draw_line(w,nodes,2,LANDUSE_DEPTH, 175, 175, 175);
           }
           else if(!strcmp(tag_value,"garden")){
             draw_polygon(w,nodes,LANDUSE_DEPTH, 207, 236, 168);
-            //polygonRGBA( tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);
+            draw_line(w,nodes,2,LANDUSE_DEPTH, 175, 175, 175);
           }
           else if(!strcmp(tag_value,"pitch")){
             draw_polygon(w,nodes,LANDUSE_DEPTH, 138, 211, 175);
+            draw_line(w,nodes,2,LANDUSE_DEPTH, 175, 175, 175);
           }
           else if(!strcmp(tag_value,"residential")){
-            //draw_line(w,nodes,1.2f,LANDUSE_DEPTH, 218, 218, 218);
+            draw_line(w,nodes,1.2f,LANDUSE_DEPTH, 218, 218, 218);
           }
         }
         else if(!strcmp(tag_key,"area")){
           if(!strcmp(tag_value,"yes")){
-            draw_polygon(w,nodes,BULDING_DEPTH, 237, 237, 237);
+            draw_polygon(w,nodes,AREA_DEPTH, 237, 237, 237);
+          }else{
+            printf("area: %s\n",tag_value);
+          }
+        }
+        else if(!strcmp(tag_key,"network")){
+          if(!strcmp(tag_value,"RATP")){
+            draw_line(w,nodes,1,HIGHWAY_DEPTH, 218, 218, 218);
           }else{
             printf("area: %s\n",tag_value);
           }
@@ -311,7 +319,9 @@ void draw_relations(GHashTable *relations, GHashTable *ways, GHashTable *nodes){
   while(g_hash_table_iter_next(&iter5, NULL, &relat5)){
     my_relation *rel = (my_relation *)malloc(sizeof(my_relation));
     rel = (my_relation *)relat5;
-    draw_one_relation(rel,relations,ways,nodes);
+    if ( !strcmp(rel->at.visible,"true")) {
+      draw_one_relation(rel,relations,ways,nodes);
+    }
   }
   printf("done relations...\n");
 }
@@ -322,10 +332,14 @@ void draw_ways(GHashTable *hash_ways, GHashTable *hash_nodes){
 	g_hash_table_iter_init(&iter, hash_ways);
 	 while(g_hash_table_iter_next(&iter, NULL, &val)){
      my_way *way = (my_way *)val;
-     if(way->drawn == 0)
-      draw_way(way,hash_ways,hash_nodes);
-     way->drawn = 0;
-     g_hash_table_insert(hash_ways,&(way->at.id),way);
+     if ( !strcmp(way->at.visible,"true")) {
+       if(way->drawn == 0)
+        draw_way(way,hash_ways,hash_nodes);
+       way->drawn = 0;
+       g_hash_table_insert(hash_ways,&(way->at.id),way);
+   }
+   //else
+    //printf("visible %s\n", way->at.);
   }
 }
 

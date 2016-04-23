@@ -62,6 +62,7 @@ void setWayInformation(GHashTable *ways, xmlNodePtr noeud){
     my_way *way = init_my_way();
     char *id = (char *)xmlGetProp(noeud, BAD_CAST "id");
     strcpy(way->at.id,id);
+    strcpy(way->at.visible,(char *)xmlGetProp(noeud, BAD_CAST "visible"));
     //printf("%s\n",way->at.id);
     xmlNodePtr child = noeud->children;
     while( child != NULL){
@@ -81,6 +82,7 @@ void setWayInformation(GHashTable *ways, xmlNodePtr noeud){
       child = child->next;
     }
     g_hash_table_insert(ways, &(way->at.id), way);
+    //free(id);
 }
 
 void setNodeInformations(GHashTable *nodes, xmlNodePtr noeud, my_bounds *bound){
@@ -142,6 +144,7 @@ void setRelationInformations(GHashTable *relations, xmlNodePtr noeud){
   my_relation *rel = init_my_relation();
   char *id = (char *)xmlGetProp(noeud, BAD_CAST "id");
   strcpy(rel->at.id,id);
+  strcpy(rel->at.visible,(char *)xmlGetProp(noeud, BAD_CAST "visible"));
   xmlNodePtr child = noeud->children;
   while ( child != NULL ) {
     xmlChar *ref = NULL;
