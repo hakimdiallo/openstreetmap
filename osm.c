@@ -95,7 +95,7 @@ void setNodeInformations(GHashTable *nodes, xmlNodePtr noeud, my_bounds *bound){
   double cor = fmax( ((bound->maxlat - bound->minlat) / HEIGHT), ((bound->maxlon - bound->minlon) / WIDTH) );
   n->lat = calcul_coor_y( merc_y(strtod((const char *)lat,NULL)), bound ) / cor;
   n->lon = calcul_coor_x( merc_x(strtod((const char *)lon,NULL)), bound ) / cor;
-  printf("lon%f\tlat%f\n", n->lon, n->lat);
+  //printf("lon%f\tlat%f\n", n->lon, n->lat);
   //n->lat = calcul_coor_y( (RAYON_TERRE*sin(strtod((const char *)lat,NULL)) * sqrt(2)), bound );
   //n->lon = calcul_coor_x( ((RAYON_TERRE*M_PI*strtod((const char *)lon,NULL))/(180 * sqrt(2))), bound );
   xmlNodePtr child = noeud->children;
@@ -131,11 +131,11 @@ void setBoundInformations(my_bounds *bound, xmlNodePtr noeud){
   bound->minlat = RAYON_TERRE*sin(strtod((const char *)minlat,NULL)) * sqrt(2);
   bound->maxlon = (RAYON_TERRE*M_PI*strtod((const char *)maxlon,NULL))/(180 * sqrt(2));
   bound->minlon = (RAYON_TERRE*M_PI*strtod((const char *)minlon,NULL))/(180 * sqrt(2));*/
-  printf("minlon %f\nmaxlon %f\nminlat %f\nmaxlat %f\n", bound->minlon,  bound->maxlon, bound->minlat, bound->maxlat);
-  printf("height:%f\n", (bound->maxlat - bound->minlat) );
-  printf("width:%f\n", (bound->maxlon - bound->minlon));
-  printf("corrH:%f\n", (bound->maxlat - bound->minlat)/HEIGHT );
-  printf("corrW:%f\n", (bound->maxlon - bound->minlon)/WIDTH);
+//  printf("minlon %f\nmaxlon %f\nminlat %f\nmaxlat %f\n", bound->minlon,  bound->maxlon, bound->minlat, bound->maxlat);
+  //printf("height:%f\n", (bound->maxlat - bound->minlat) );
+  //printf("width:%f\n", (bound->maxlon - bound->minlon));
+  //printf("corrH:%f\n", (bound->maxlat - bound->minlat)/HEIGHT );
+  //printf("corrW:%f\n", (bound->maxlon - bound->minlon)/WIDTH);
 }
 
 void setRelationInformations(GHashTable *relations, xmlNodePtr noeud){

@@ -19,6 +19,7 @@ void draw_line(my_way *way, GHashTable *nodes, GLfloat width, GLdouble depth, GL
 }
 
 void draw_line_stipple(my_way *way, GHashTable *nodes, GLfloat width, GLdouble depth, GLubyte r, GLubyte g, GLubyte b){
+  glEnable(GL_LINE_STIPPLE);
   glColor3ub(r,g,b); //Couleur de la ligne
   glLineWidth( width );//Change la largeur d'une ligne
   glLineStipple(1,1);
@@ -30,6 +31,7 @@ void draw_line_stipple(my_way *way, GHashTable *nodes, GLfloat width, GLdouble d
       glVertex3d((GLdouble)(node1->lon),(GLdouble)(node1->lat),depth);
     }
   glEnd();
+  glDisable(GL_LINE_STIPPLE);
 }
 
 void draw_polygon(my_way *way, GHashTable *nodes, GLdouble depth, GLubyte r, GLubyte g, GLubyte b){
@@ -62,6 +64,17 @@ void draw_polygon(my_way *way, GHashTable *nodes, GLdouble depth, GLubyte r, GLu
   free(data1);
 }
 
+void write_name(my_way *way, GHashTable *nodes, char *name){
+  glColor3ub(255,0,0);
+  //int len = (int)strlen(name);
+  int mi = g_slist_length(way->nodes)/2;
+  my_node *node = g_hash_table_lookup(nodes,g_slist_nth_data(way->nodes,mi));
+  glRasterPos3d(node->lon,node->lat,1.0);
+  //int i;
+  //for (i = 0; i < len; i++){
+    //glutBitmapString(GLUT_BITMAP_HELVETICA_18, name);
+  //}
+}
 
 void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes){
     if ( w == NULL ) {
@@ -70,7 +83,9 @@ void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes){
     if( w->tag == NULL || g_hash_table_size(w->tag) == 0 ||
         (g_hash_table_size(w->tag) == 1 && g_hash_table_lookup(w->tag,(const char *)"source") != NULL) ) {
       draw_polygon(w,nodes,INNER_DEPTH,221, 221, 221);
-      draw_line(w,nodes,2,INNER_DEPTH,168, 146, 162);
+      draw_line(w,nodes,CONTOUR_WIDTH,INNER_DEPTH,168, 146, 162);
+      w->drawn = 1;
+      g_hash_table_insert(ways,&(w->at.id),w);
       return;
     }
     GHashTableIter iter2;
@@ -81,20 +96,20 @@ void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes){
       char *tag_key = (char *)key;
       char *tag_value = (char *)value;
       if(!strcmp(tag_key,"highway")){
-          if(!strcmp(tag_value,"motorway")){
+          if(!strcmp(tag_value,"motorway") || !strcmp(tag_value,"motorway_link")){
             draw_line(w,nodes,HIGHWAY_WIDTH,HIGHWAY_DEPTH,233,144,160);
           }
           else if(!strcmp(tag_value,"trunk")){
             draw_line(w,nodes,HIGHWAY_WIDTH,HIGHWAY_DEPTH,251,178,154);
           }
           else if(!strcmp(tag_value,"primary") || !strcmp(tag_value,"primary_link")){
-            draw_line(w,nodes,HIGHWAY_WIDTH,HIGHWAY_DEPTH,236,152,154);
+            draw_line(w,nodes,HIGHWAY_WIDTH,HIGHWAY_DEPTH,253,215,161);
           }
           else if(!strcmp(tag_value,"secondary") || !strcmp(tag_value,"secondary_link")){
-            draw_line(w,nodes,HIGHWAY_WIDTH,HIGHWAY_DEPTH,254,215,165);
+            draw_line(w,nodes,HIGHWAY_WIDTH,HIGHWAY_DEPTH,246,250,187);
           }
           else if(!strcmp(tag_value,"tertiary") || !strcmp(tag_value,"tertiary_link")){
-            draw_line(w,nodes,HIGHWAY_WIDTH,HIGHWAY_DEPTH,255,255,179);
+            draw_line(w,nodes,HIGHWAY_WIDTH,HIGHWAY_DEPTH,254,254,254);
             //draw_line(ways[i],15,0,254,254);
           }
           else if(!strcmp(tag_value,"unclassified")){
@@ -107,22 +122,19 @@ void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes){
             draw_line(w,nodes,5,HIGHWAY_DEPTH,254,254,254);
           }
           else if(!strcmp(tag_value,"pedestrian")){
-            draw_line(w,nodes,5,HIGHWAY_DEPTH,237,237,237);
+            draw_line(w,nodes,5,PEDEST_DEPTH,221,221,233);
           }
           else if(!strcmp(tag_value,"footway") || !strcmp(tag_value,"path")){
-            draw_line(w,nodes,2,HIGHWAY_DEPTH,248,147,136);
-          }
-          else if(!strcmp(tag_value,"motorway_link")){
-            draw_line(w,nodes,9,HIGHWAY_DEPTH,233,144,160);
+            draw_line_stipple(w,nodes,2,HIGHWAY_DEPTH,248,155,144);
           }
           else if(!strcmp(tag_value,"trunk_link")){
-            draw_line(w,nodes,9,HIGHWAY_DEPTH,251,178,154);
+            draw_line(w,nodes,HIGHWAY_WIDTH,HIGHWAY_DEPTH,251,178,154);
           }
           else if(!strcmp(tag_value,"living_street")){
-            draw_line(w,nodes,9,HIGHWAY_DEPTH,237,237,237);
+            draw_line(w,nodes,HIGHWAY_WIDTH,HIGHWAY_DEPTH,237,237,237);
           }
           else if(!strcmp(tag_value,"track")){
-            draw_line(w,nodes,2,HIGHWAY_DEPTH,172,131,39);
+            draw_line_stipple(w,nodes,2,HIGHWAY_DEPTH,172,131,39);
           }
           else if(!strcmp(tag_value,"bus_guideway")){
             draw_line(w,nodes,4,HIGHWAY_DEPTH,100,100,255);
@@ -134,13 +146,13 @@ void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes){
             draw_line(w,nodes,2,HIGHWAY_DEPTH,221,221,221);
           }
           else if(!strcmp(tag_value,"bridleway")){
-            draw_line(w,nodes,2,HIGHWAY_DEPTH,73,161,72);
+            draw_line(w,nodes,2,HIGHWAY_DEPTH,94,171,92);
           }
           else if(!strcmp(tag_value,"steps")){
             draw_line(w,nodes,5,HIGHWAY_DEPTH,252,119,102);
           }
           else if(!strcmp(tag_value,"cycleway")){
-            draw_line(w,nodes,2,HIGHWAY_DEPTH,155,154,245);
+            draw_line_stipple(w,nodes,2,PEDEST_DEPTH,119,117,248);
           }
           else{
             printf("highway: %s\n",tag_value);
@@ -149,7 +161,7 @@ void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes){
         else if(!strcmp(tag_key,"building")){
           if(!strcmp(tag_key,"building")){
             draw_polygon(w,nodes,BULDING_DEPTH, 191, 174, 174);
-            draw_line(w,nodes,2,BULDING_DEPTH,168, 146, 162);
+            draw_line(w,nodes,CONTOUR_WIDTH,BULDING_COUNTOUR_DEPTH,168, 146, 162);
             //polygonRGBA( tab_x, tab_y, g_slist_length(w->nodes), 168, 146, 162, 255);
           }
         }
@@ -168,50 +180,140 @@ void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes){
         else if(!strcmp(tag_key,"natural")){
           if(!strcmp(tag_value,"water")){
             draw_polygon(w,nodes,HIGHWAY_DEPTH,180, 208, 209);
-            draw_line(w,nodes,2,HIGHWAY_DEPTH,175, 175, 175);
+            draw_line(w,nodes,CONTOUR_WIDTH,HIGHWAY_DEPTH,175, 175, 175);
             //polygonRGBA( tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);
           }
           else if(!strcmp(tag_value,"coastline")){
             if ( !coast_line) {
-              //SDL_SetRenderDrawColor( 180, 208, 209, 255);
-              //SDL_RenderClear(renderer);
+              //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+              glClearColor(174/255.0,208/255.0,208/255.0,0.0);
               coast_line = 1;
             }
-            draw_polygon(w,nodes,WATER_DEPTH, 221, 221, 221);
+            //draw_polygon(w,nodes,WATER_DEPTH, 221, 221, 221);
           }
         }
         else if(!strcmp(tag_key,"landuse") || !strcmp(tag_key,"leisure")){
           if(!strcmp(tag_value,"grass")){
-            //draw_polygon( tab_x, tab_y, g_slist_length(w->nodes), 207, 237, 165, 255);
+            draw_polygon(w,nodes,LANDUSE_DEPTH, 207, 237, 165);
             //polygonRGBA( tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);
           }
           else if(!strcmp(tag_value,"forest")){
-            //draw_polygon( tab_x, tab_y, g_slist_length(w->nodes), 157, 202, 138, 255);
+            draw_polygon(w,nodes,LANDUSE_DEPTH, 157, 202, 138);
             //polygonRGBA( tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);
           }
           else if(!strcmp(tag_value,"park")){
-            //draw_polygon( tab_x, tab_y, g_slist_length(w->nodes), 205, 247, 201, 255);
+            draw_polygon(w,nodes,LANDUSE_DEPTH, 205, 247, 201);
             //polygonRGBA( tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);
           }
           else if(!strcmp(tag_value,"garden")){
-            //draw_polygon( tab_x, tab_y, g_slist_length(w->nodes), 207, 236, 168, 255);
+            draw_polygon(w,nodes,LANDUSE_DEPTH, 207, 236, 168);
             //polygonRGBA( tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);
           }
           else if(!strcmp(tag_value,"pitch")){
-            //draw_polygon( tab_x, tab_y, g_slist_length(w->nodes), 138, 211, 175, 255);
+            draw_polygon(w,nodes,LANDUSE_DEPTH, 138, 211, 175);
+          }
+          else if(!strcmp(tag_value,"residential")){
+            //draw_line(w,nodes,1.2f,LANDUSE_DEPTH, 218, 218, 218);
           }
         }
         else if(!strcmp(tag_key,"area")){
           if(!strcmp(tag_value,"yes")){
-            //draw_polygon( tab_x, tab_y, g_slist_length(w->nodes), 237, 237, 237, 255);
-            //polygonRGBA( tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);;
+            draw_polygon(w,nodes,BULDING_DEPTH, 237, 237, 237);
           }else{
             printf("area: %s\n",tag_value);
           }
         }
+        else if(!strcmp(tag_key,"name")){
+          //write_name(w,nodes,tag_value);
+        }
     }
-    //w->drawn = 1;
-    //g_hash_table_insert(ways,&(w->at.id),w);
+    if ( strcmp(w->at.id,"") ){
+      w->drawn = 1;
+      g_hash_table_insert(ways,&(w->at.id),w);
+    }
+}
+
+void draw_way_relation(GSList *list, GHashTable *hash_ways, GHashTable *hash_nodes){
+  int i;
+  int count = g_slist_length(list);
+  for (i = 0; i < count; i++) {
+    char *data = g_slist_nth_data(list, i);
+    my_way *way = (my_way *)malloc(sizeof(my_way));
+    way = (my_way *)g_hash_table_lookup(hash_ways,data);
+    if ( way == NULL ) {
+      //printf("way null...\n");
+    }
+    else
+      draw_way(way,hash_ways,hash_nodes);
+
+    way = NULL;
+  }
+}
+
+void draw_one_relation(my_relation *rel, GHashTable *hash_relations, GHashTable *hash_ways, GHashTable *hash_nodes){
+  //if ( !(rel->drawn) ) {
+    if ( (rel->relations) != NULL ){
+      if (g_slist_length(rel->relations) > 0) {
+        int i;
+        int size = g_slist_length(rel->relations);
+        for (i = 0; i < size; i++) {
+          char *data = g_slist_nth_data (rel->relations, i);
+          //printf("rel n: %s\n",data);
+
+          my_relation *re = (my_relation *)malloc(sizeof(my_relation));
+          re = (my_relation *)g_hash_table_lookup(hash_relations,data);
+          if(re == NULL){
+            //printf("relation null...\n");
+          }
+          else
+            draw_one_relation(re,hash_relations,hash_ways,hash_nodes);
+        }
+      }
+    }
+    if ( rel->ways_outer != NULL && g_slist_length(rel->ways_outer) > 0 ){
+      if ( rel->ways_inner == NULL || g_slist_length(rel->ways_inner) == 0 ){
+        my_way *way = init_my_way();
+        int i;
+        int count = g_slist_length(rel->ways_outer);
+        for (i = 0; i < count; i++) {
+          my_way *w = (my_way *)g_hash_table_lookup(hash_ways,g_slist_nth_data(rel->ways_outer,i));
+          if ( w != NULL ) {
+            int j;
+            int size = g_slist_length(w->nodes);
+            for (j = 0; j < size; j++) {
+              add_node_my_way(way,g_slist_nth_data(w->nodes,j));
+            }
+          }
+        }
+        strcpy(way->at.id,"");
+        way->tag = rel->tags;
+        draw_way(way,hash_ways,hash_nodes);
+      }else {
+        draw_way_relation(rel->ways_outer,hash_ways, hash_nodes);
+      }
+    }
+    if ( rel->ways_inner != NULL && g_slist_length(rel->ways_inner) > 0 ){
+      draw_way_relation(rel->ways_inner,hash_ways,hash_nodes);
+    }
+    if ( rel->ways != NULL && g_slist_length(rel->ways) > 0 ){
+      draw_way_relation(rel->ways,hash_ways,hash_nodes);
+    }
+    if ( rel->nodes != NULL && g_slist_length(rel->nodes) > 0 ){
+      /* code */
+    }
+  //}
+}
+
+void draw_relations(GHashTable *relations, GHashTable *ways, GHashTable *nodes){
+  GHashTableIter iter5;
+  gpointer relat5;
+  g_hash_table_iter_init(&iter5, relations);
+  while(g_hash_table_iter_next(&iter5, NULL, &relat5)){
+    my_relation *rel = (my_relation *)malloc(sizeof(my_relation));
+    rel = (my_relation *)relat5;
+    draw_one_relation(rel,relations,ways,nodes);
+  }
+  printf("done relations...\n");
 }
 
 void draw_ways(GHashTable *hash_ways, GHashTable *hash_nodes){
@@ -219,7 +321,11 @@ void draw_ways(GHashTable *hash_ways, GHashTable *hash_nodes){
 	gpointer val;
 	g_hash_table_iter_init(&iter, hash_ways);
 	 while(g_hash_table_iter_next(&iter, NULL, &val)){
-     draw_way((my_way *)val,hash_ways,hash_nodes);
+     my_way *way = (my_way *)val;
+     if(way->drawn == 0)
+      draw_way(way,hash_ways,hash_nodes);
+     way->drawn = 0;
+     g_hash_table_insert(hash_ways,&(way->at.id),way);
   }
 }
 
@@ -242,7 +348,8 @@ void init_opengl(){
   //activation de la profondeur des dessins
   glEnable(GL_DEPTH_TEST);
   //activation des pointillés
-  glEnable(GL_LINE_STIPPLE );
+  //glEnable(GL_LINE_STIPPLE );
+  glEnable( GL_LINE_SMOOTH );
   glClearColor(221/255.0,221/255.0,221/255.0,0.0);
 }
 
@@ -273,6 +380,7 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
 
   init_opengl();
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  draw_relations(hash_relations,hash_ways,hash_nodes);
   draw_ways(hash_ways,hash_nodes);
   glFlush();
   SDL_GL_SwapWindow(win);
@@ -288,6 +396,7 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
       glViewport( 0.f, 0.f, ecranW, ecranH );
       glPushMatrix();
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      draw_relations(hash_relations,hash_ways,hash_nodes);
     	draw_ways(hash_ways,hash_nodes);
       glFlush();
       SDL_GL_SwapWindow(win);
@@ -312,6 +421,7 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
         glTranslatef( cameraX , cameraY, 0.f );
         glPushMatrix();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        draw_relations(hash_relations,hash_ways,hash_nodes);
       	draw_ways(hash_ways,hash_nodes);
         glFlush();
   		 	SDL_GL_SwapWindow(win);
@@ -335,6 +445,7 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
         glScalef( zoom, zoom, 0 );
         glPushMatrix();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        draw_relations(hash_relations,hash_ways,hash_nodes);
       	draw_ways(hash_ways,hash_nodes);
         glFlush();
   		 	SDL_GL_SwapWindow(win);
@@ -354,6 +465,7 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
         glScalef( zoom, zoom, 0 );
         glPushMatrix();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        draw_relations(hash_relations,hash_ways,hash_nodes);
       	draw_ways( hash_ways,hash_nodes);
         glFlush();
   		 	SDL_GL_SwapWindow(win);
@@ -367,13 +479,14 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
         cameraX = 0;
         cameraY = 0;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        draw_relations(hash_relations,hash_ways,hash_nodes);
       	draw_ways( hash_ways,hash_nodes);
         glFlush();
   		 	SDL_GL_SwapWindow(win);
       }
 
   }
-  glDisable(GL_LINE_STIPPLE);
+  //glDisable(GL_LINE_STIPPLE);
 	glDisable(GL_DEPTH_TEST);
   SDL_GL_DeleteContext(contextOpenGL);
 	SDL_DestroyWindow(win);
