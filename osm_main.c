@@ -14,6 +14,8 @@ int main(int argc, char *argv[]){
 		printf("1 argument manquand: le nom du fichier xml/osm a parser.\n");
 		return -1;
 	}
+	glutInit(&argc,argv);
+  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
 	my_bounds *bound;
 	GHashTable *hash_ways;
 	GHashTable *hash_nodes;
