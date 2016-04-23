@@ -1,13 +1,12 @@
 #ifndef _GRAPHIC_OPENGL_H_
   #define _GRAPHIC_OPENGL_H_
+#include <SDL_opengl.h>
+#include <GL/glut.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <SDL.h>
-#include <SDL2_gfxPrimitives.h>
 #include "osm.h"
 #include "osm_structure.h"
-#include <SDL_opengl.h>
-#include <GL/glut.h>
 
 #define ZOOM 0.2f
 #define MAX_ZOOM 30

@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <SDL.h>
+#include <GL/glut.h>
+#include <SDL_opengl.h>
 #include <SDL2_gfxPrimitives.h>
 #include "osm.h"
 #include "osm_structure.h"

@@ -32,19 +32,35 @@ void draw_line_stipple(my_way *way, GHashTable *nodes, GLfloat width, GLdouble d
   glEnd();
 }
 
-
 void draw_polygon(my_way *way, GHashTable *nodes, GLdouble depth, GLubyte r, GLubyte g, GLubyte b){
-  glColor3ub(r,g,b); //Couleur de la ligne
-  glBegin(GL_POLYGON);
-    int size = g_slist_length(way->nodes);
-    int i;
-    for (i = 0; i < size; i++){
-      my_node *node1 = g_hash_table_lookup(nodes, g_slist_nth_data(way->nodes, i));
-      glVertex3d((GLdouble)(node1->lon),(GLdouble)(node1->lat),depth);
-    }
-  glEnd();
+  int size = g_slist_length(way->nodes);
+  GLdouble **data1 = malloc(sizeof(GLdouble *)*size);
+  int i;
+  // Création du tesselator
+	GLUtesselator * tobj1 = gluNewTess();
+	// Définition des fcts callback
+  gluTessCallback(tobj1, GLU_TESS_BEGIN, (_GLUfuncptr)glBegin);
+  gluTessCallback(tobj1, GLU_TESS_VERTEX,  (_GLUfuncptr)glVertex3dv);
+  gluTessCallback(tobj1, GLU_TESS_END, (_GLUfuncptr)glEnd);
+  glColor3ub(r,g,b); //Couleur du polygone
+  gluTessBeginPolygon(tobj1, NULL);
+		gluTessBeginContour(tobj1);
+      for (i = 0; i < size; i++){
+        my_node *node1 = g_hash_table_lookup(nodes, g_slist_nth_data(way->nodes, i));
+        data1[i] = malloc(sizeof(GLdouble)*3);
+        data1[i][0] = (GLdouble)(node1->lon);
+        data1[i][1] = (GLdouble)(node1->lat);
+        data1[i][2] = depth;
+        gluTessVertex(tobj1, data1[i], data1[i]);
+      }
+		gluTessEndContour(tobj1);
+  gluTessEndPolygon(tobj1);
+  gluDeleteTess(tobj1);
+  for (i = 0; i < size; i++){
+    free(data1[i]);
+  }
+  free(data1);
 }
-
 
 
 void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes){
@@ -227,10 +243,8 @@ void init_opengl(){
   glEnable(GL_DEPTH_TEST);
   //activation des pointillés
   glEnable(GL_LINE_STIPPLE );
-  glEnable( GL_LINE_SMOOTH );
   glClearColor(221/255.0,221/255.0,221/255.0,0.0);
 }
-
 
 void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTable *hash_relations){
   SDL_Window *win = NULL;
@@ -361,7 +375,6 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
   }
   glDisable(GL_LINE_STIPPLE);
 	glDisable(GL_DEPTH_TEST);
-  glDisable( GL_LINE_SMOOTH );
   SDL_GL_DeleteContext(contextOpenGL);
 	SDL_DestroyWindow(win);
 	SDL_Quit();
