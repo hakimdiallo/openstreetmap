@@ -18,13 +18,26 @@
 #define AREA_DEPTH 0.25
 #define BULDING_COUNTOUR_DEPTH 0.4
 #define LANDUSE_DEPTH 0.7
+#define LAND_DEPTH 0.73
 #define INNER_DEPTH 0.5
 #define PEDEST_DEPTH 0.2
+#define STEP_WAY_DEPTH 0.75
 #define HIGHWAY_DEPTH 0.8
 #define HIGHWAY_DEPTH_SND 0.9
 
 #define CONTOUR_WIDTH 1
 #define HIGHWAY_WIDTH 5.0f
+#define SERVICE_WIDTH 3
+#define PEDEST_WIDTH 5
+#define FOOTWAY_WIDTH 2
+#define TRACK_WIDTH 2
+#define BUS_G_WIDTH 4
+#define ROAD_WIDTH 2
+#define BRIDLEWAY_WIDTH 2
+#define CYCLEWAY_WIDTH 2
+
+#define SHOW_TEXT 0
+
 //Dessine une ligne avec une couleur , une largeur et une profondeur
 void draw_line( my_way *way, GHashTable *nodes, GLfloat width, GLdouble depth, GLubyte r, GLubyte g, GLubyte b);
 //Dessine une ligne en pointillé
