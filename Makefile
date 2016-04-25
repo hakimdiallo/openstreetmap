@@ -1,21 +1,26 @@
 CC = gcc
-CFLAGS = -g -lm -lSDL2_gfx -Wall -lglut -lGLU -lGL
-CPPFLAGS = `xml2-config --cflags --libs` `sdl2-config --cflags --libs` `pkg-config --cflags --libs glib-2.0`
+CFLAGS = -g -lm -lSDL2_gfx -W -Wall -lglut -lGLU -lGL
+LDFLAGS = `xml2-config --cflags --libs` `sdl2-config --cflags --libs` `pkg-config --cflags --libs glib-2.0`
 EXEC = osm_main
-HEADERS = $(wildcard *.h)
+#HEADERS = $(wildcard *.h)
 OBJECTS = $(patsubst %.c, %.o, $(wildcard *.c))
 
 all: $(EXEC)
 
 $(EXEC): $(OBJECTS)
-	$(CC) -o $@ $^ $(CPPFLAGS) $(CFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS) $(CFLAGS)
 
-%.o: %.c $(HEADERS)
-	$(CC) $(CFLAGS) -c $< $(CPPFLAGS)
+%.o: %.c #$(HEADERS)
+	$(CC) $(CFLAGS) -c $< $(LDFLAGS)
 
-#gcc -Wall -o hello_glib hello_glib.c $(pkg-config --cflags --libs glib-2.0)
 mrproper: clean
 	rm -f $(EXEC)
+
+osm_main.o: graphic_opengl.h osm_structure.h osm.h
+osm_structure.o: osm_structure.h
+osm.o: osm_structure.h osm.h mercator.h
+graphic_opengl.o: graphic_opengl.h osm_structure.h
+mercator.o: mercator.h 
 
 clean:
 	rm -f $(OBJECTS)
