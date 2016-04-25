@@ -12,6 +12,11 @@ int main(int argc, char *argv[]){
 		printf("1 argument manquand: le nom du fichier xml/osm a parser.\n");
 		return -1;
 	}
+	int len = strlen(argv[1]);
+	if( argv[1][len-4] != '.' && argv[1][len-3] != 'o' && argv[1][len-2] != 's' && argv[1][len-1] != 'm' ) {
+		printf("l'extension du fichier n'est pas .osm\n");
+		exit(-1);
+	}
 	glutInit(&argc,argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
 	my_bounds *bound;

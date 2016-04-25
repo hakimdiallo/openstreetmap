@@ -1,7 +1,8 @@
+/*Fichier récupérer sur le wiki d'openstreetMap
+http://wiki.openstreetmap.org/wiki/Mercator#C_implementation*/
 #ifndef _MERCATOR_H_
 #define _MERCATOR_H_
 #include <math.h>
-
 /*
  * Mercator transformation
  * accounts for the fact that the earth is not a sphere, but a spheroid

@@ -11,17 +11,19 @@
 #define MY_NODE_SIZE 100
 #define ACTIVE 1
 
-
+//Structure de tag du document osm
 typedef struct my_tag {
 	char *key;
 	char *value;
 } my_tag;
 
+//structure qui contient l'attribut en commun de chaque noeud du document osm
 typedef struct my_attributs {
 	char id[20];
 	char visible[10];
 } my_attributs;
 
+//structure du noeud  "node"
 typedef struct my_node {
 	double lon;
 	double lat;
@@ -29,6 +31,7 @@ typedef struct my_node {
 	GHashTable *tag;
 } my_node;
 
+//structure du noeud "way"
 typedef struct my_way {
 	my_attributs at;
 	GSList *nodes;
@@ -36,6 +39,7 @@ typedef struct my_way {
 	int drawn;
 } my_way;
 
+//structure du noeud "relation"
 typedef struct my_relation{
 	my_attributs at;
 	GSList *ways_inner;
@@ -46,10 +50,12 @@ typedef struct my_relation{
 	GHashTable *tags;
 }my_relation;
 
+//structure du noeud "area"
 typedef struct my_area {
 	my_way w;
 }area;
 
+//structure du noeud bounds
 typedef struct my_bounds{
 	double maxlat;
 	double minlat;
@@ -77,22 +83,22 @@ void add_node_my_way(my_way *way, char *idNode);
 //ajoute un tag dans un node
 void add_tag_my_node(my_node *node, my_tag *tag);
 
-//
+//ajoute l'id d'un way dans une rélation
 void add_way_to_relation(my_relation *rel, char *idWay, xmlChar *role);
 
-//
+//ajoute l'id d'un node dans une rélation
 void add_node_to_relation(my_relation *rel, char *idNode);
 
-//
+//ajoute un tag dans une rélation
 void add_tag_to_relation(my_relation *rel, my_tag *tag);
 
-//
+//ajoute l'id d'une rélation dans une rélation
 void add_relation_to_relation(my_relation *rel, char *idRel);
 
-//flibère une structure my_tag
+//libère une structure my_tag
 void free_my_tag(my_tag *tag);
 
-//détruit la structure my_way
+//libère la structure my_way
 void free_my_way(my_way *way);
 
 //Libère un tableau de ways

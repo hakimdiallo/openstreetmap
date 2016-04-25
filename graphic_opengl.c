@@ -83,7 +83,7 @@ void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes){
         (g_hash_table_size(w->tag) == 1 && g_hash_table_lookup(w->tag,(const char *)"source") != NULL) ) {
       if (!coast_line) {
         draw_polygon(w,nodes,INNER_DEPTH,221, 221, 221);
-        draw_line(w,nodes,CONTOUR_WIDTH,INNER_DEPTH,168, 146, 162);
+        //draw_line(w,nodes,CONTOUR_WIDTH,INNER_DEPTH,168, 146, 162);
         w->drawn = 1;
         g_hash_table_insert(ways,&(w->at.id),w);
         return;
@@ -154,9 +154,6 @@ void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes){
           }
           else if(!strcmp(tag_value,"cycleway")){
             draw_line_stipple(w,nodes,CYCLEWAY_WIDTH,STEP_WAY_DEPTH,119,117,248);
-          }
-          else{
-            printf("highway: %s\n",tag_value);
           }
         }
         else if(!strcmp(tag_key,"building")){
@@ -230,8 +227,6 @@ void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes){
         else if(!strcmp(tag_key,"area")){
           if(!strcmp(tag_value,"yes")){
             draw_polygon(w,nodes,AREA_DEPTH, 237, 237, 237);
-          }else{
-            printf("area: %s\n",tag_value);
           }
         }
         else if(!strcmp(tag_key,"name")){
@@ -239,14 +234,22 @@ void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes){
             write_name(w,nodes,tag_value);
           }
         }
-        else if(!strcmp(tag_key,"network")){
-          if(!strcmp(tag_value,"RATP")){
-            draw_line_stipple(w,nodes,1,0.4, 255, 0, 0);
+        else if(!strcmp(tag_key,"route")){
+          if(!strcmp(tag_value,"subway")){
+            draw_line(w,nodes,2,RAILWAY_DEPTH, 0, 0, 255);
+          }else if(!strcmp(tag_value,"ferry")){
+            draw_line_stipple(w,nodes,1,RAILWAY_DEPTH, 25, 29, 138);
+          }
+          else if(!strcmp(tag_value,"train")){
+            draw_line_stipple(w,nodes,2,RAILWAY_DEPTH, 153, 153, 153);
+          }
+          else if(!strcmp(tag_value,"bus")){
+            draw_line_stipple(w,nodes,2,RAILWAY_DEPTH, 255, 0, 0);
           }
         }
-        else if(!strcmp(tag_key,"route")){
-          if(!strcmp(tag_value,"ferry")){
-            draw_line_stipple(w,nodes,1,0.4, 25, 29, 138);
+        else if(!strcmp(tag_key,"railway")){
+          if(!strcmp(tag_value,"rail")){
+            draw_line_stipple(w,nodes,2,RAILWAY_DEPTH, 153, 153, 153);
           }
         }
     }
@@ -272,12 +275,12 @@ void draw_way_relation(GSList *list, GHashTable *hash_ways, GHashTable *hash_nod
   }
 }
 
-my_way *set_way_outer(my_relation *rel, GHashTable *hash_ways){
+my_way *set_way(my_relation *rel, GSList *list, GHashTable *hash_ways){
   my_way *way = init_my_way();
   int i;
-  int count = g_slist_length(rel->ways_outer);
+  int count = g_slist_length(list);
   for (i = 0; i < count; i++) {
-    my_way *w = (my_way *)g_hash_table_lookup(hash_ways,g_slist_nth_data(rel->ways_outer,i));
+    my_way *w = (my_way *)g_hash_table_lookup(hash_ways,g_slist_nth_data(list,i));
     if ( w != NULL ) {
       int j;
       int size = g_slist_length(w->nodes);
@@ -291,6 +294,20 @@ my_way *set_way_outer(my_relation *rel, GHashTable *hash_ways){
   return way;
 }
 
+my_way *set_way_node(my_relation *rel, GHashTable *hash_nodes){
+  my_way *way = init_my_way();
+  int i;
+  int count = g_slist_length(rel->nodes);
+  for (i = 0; i < count; i++) {
+    char *idnode = g_slist_nth_data(rel->nodes,i);
+    my_node *node = g_hash_table_lookup(hash_nodes,idnode);
+    if( node != NULL )
+      add_node_my_way(way,idnode);
+  }
+  strcpy(way->at.id,"");
+  way->tag = rel->tags;
+  return way;
+}
 
 void draw_one_relation(my_relation *rel, GHashTable *hash_relations, GHashTable *hash_ways, GHashTable *hash_nodes){
   //if ( !(rel->drawn) ) {
@@ -313,18 +330,32 @@ void draw_one_relation(my_relation *rel, GHashTable *hash_relations, GHashTable 
       }
     }
     if ( rel->ways_outer != NULL && g_slist_length(rel->ways_outer) > 0 ){
-      /*if ( rel->ways_inner == NULL || g_slist_length(rel->ways_inner) == 0 ){
-        my_way *way = set_way_outer(rel,hash_ways);
+      if ( (rel->ways_inner == NULL || g_slist_length(rel->ways_inner) == 0)
+      && ( rel->ways != NULL && g_slist_length(rel->ways) == 0 ) ){
+        my_way *way = set_way(rel,rel->ways_outer,hash_ways);
         draw_way(way,hash_ways,hash_nodes);
-      }else {*/
+      }else {
         draw_way_relation(rel->ways_outer,hash_ways, hash_nodes);
-      //}
+      }
     }
     if ( rel->ways_inner != NULL && g_slist_length(rel->ways_inner) > 0 ){
-      draw_way_relation(rel->ways_inner,hash_ways,hash_nodes);
+      draw_way_relation(rel->ways_inner,hash_ways, hash_nodes);
     }
     if ( rel->ways != NULL && g_slist_length(rel->ways) > 0 ){
-      //draw_way_relation(rel->ways,hash_ways,hash_nodes);
+      if ( (rel->ways_inner == NULL || g_slist_length(rel->ways_inner) == 0)
+      && ( rel->ways_outer != NULL && g_slist_length(rel->ways_outer) == 0 ) ){
+        my_way *way = set_way(rel,rel->ways,hash_ways);
+        draw_way(way,hash_ways,hash_nodes);
+      }//else {
+        //draw_way_relation(rel->ways_outer,hash_ways, hash_nodes);
+      //}
+    }
+
+    if ( rel->nodes != NULL && g_slist_length(rel->nodes) > 0 ){
+      my_way *way = set_way_node(rel,hash_nodes);
+      draw_way(way,hash_ways,hash_nodes);
+      //free(way);
+      //g_slist_free(way->nodes);
     }
 }
 
@@ -337,7 +368,6 @@ void draw_relations(GHashTable *relations, GHashTable *ways, GHashTable *nodes){
       draw_one_relation((my_relation *)relat5,relations,ways,nodes);
     }
   }
-  printf("done relations...\n");
 }
 
 void draw_ways(GHashTable *hash_ways, GHashTable *hash_nodes){
@@ -378,6 +408,14 @@ void init_opengl(){
   glClearColor(221/255.0,221/255.0,221/255.0,0.0);
 }
 
+void draw_relations_and_ways(SDL_Window *win, GHashTable *hash_relations, GHashTable *hash_ways, GHashTable *hash_nodes){
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  draw_relations(hash_relations,hash_ways,hash_nodes);
+  draw_ways( hash_ways,hash_nodes);
+  glFlush();
+  SDL_GL_SwapWindow(win);
+}
+
 void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTable *hash_relations){
   SDL_Window *win = NULL;
   SDL_GLContext contextOpenGL = NULL;
@@ -404,12 +442,7 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
   SDL_GetWindowSize(win, &oldEcranW, &oldEcranH);
 
   init_opengl();
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  draw_relations(hash_relations,hash_ways,hash_nodes);
-  draw_ways(hash_ways,hash_nodes);
-  glFlush();
-  SDL_GL_SwapWindow(win);
-
+  draw_relations_and_ways(win, hash_relations, hash_ways, hash_nodes);
   int continuer = 1;
   while (continuer) {
   	SDL_GetWindowSize(win, &ecranW, &ecranH); //on recupère la largeur et la hauteur de la fenêtre
@@ -420,11 +453,7 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
       gluOrtho2D(-ecranW/2,ecranW/2,-ecranH/2,ecranH/2);
       glViewport( 0.f, 0.f, ecranW, ecranH );
       glPushMatrix();
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      draw_relations(hash_relations,hash_ways,hash_nodes);
-    	draw_ways(hash_ways,hash_nodes);
-      glFlush();
-      SDL_GL_SwapWindow(win);
+      draw_relations_and_ways(win, hash_relations, hash_ways, hash_nodes);
       oldEcranW  = ecranW;  oldEcranH = ecranH;
     }
       //Evenement sdl
@@ -445,13 +474,7 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
         glScalef( zoom, zoom, 1 );
         glTranslatef( cameraX , cameraY, 0.f );
         glPushMatrix();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        draw_relations(hash_relations,hash_ways,hash_nodes);
-      	draw_ways(hash_ways,hash_nodes);
-        glFlush();
-  		 	SDL_GL_SwapWindow(win);
-        printf("Le bouton gauche est appuyé\n");
-        printf("camerax :%d cameray: %d\n", cameraX, cameraY);
+        draw_relations_and_ways(win, hash_relations, hash_ways, hash_nodes);
       }
 
       //zoom / dezoom avec le clavier
@@ -462,18 +485,13 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
         if (zoom > MAX_ZOOM) {
           zoom = MAX_ZOOM;
         }
-        printf("%f\n", zoom);
         glMatrixMode( GL_MODELVIEW );
         glPopMatrix();
         glLoadIdentity();
         glTranslatef( cameraX*zoom, cameraY*zoom, 0.f );
         glScalef( zoom, zoom, 1 );
         glPushMatrix();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        draw_relations(hash_relations,hash_ways,hash_nodes);
-      	draw_ways(hash_ways,hash_nodes);
-        glFlush();
-  		 	SDL_GL_SwapWindow(win);
+        draw_relations_and_ways(win, hash_relations, hash_ways, hash_nodes);
       }
       //zoom avec touche +
       if (state[SDL_SCANCODE_KP_MINUS] ) {
@@ -482,18 +500,13 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
           zoom = -zoom;
         if(zoom < MIN_ZOOM)
           zoom = MIN_ZOOM;
-        printf("%f\n", zoom);
         glMatrixMode( GL_MODELVIEW );
         glPopMatrix();
         glLoadIdentity();
         glTranslatef( cameraX*zoom, cameraY*zoom, 0.f );
         glScalef( zoom, zoom, 1 );
         glPushMatrix();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        draw_relations(hash_relations,hash_ways,hash_nodes);
-      	draw_ways( hash_ways,hash_nodes);
-        glFlush();
-  		 	SDL_GL_SwapWindow(win);
+        draw_relations_and_ways(win, hash_relations, hash_ways, hash_nodes);
       }
       //La touche home poutr revenir à la position initiale
       if (state[SDL_SCANCODE_HOME] ) {
@@ -503,15 +516,10 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
         zoom = 1;
         cameraX = 0;
         cameraY = 0;
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        draw_relations(hash_relations,hash_ways,hash_nodes);
-      	draw_ways( hash_ways,hash_nodes);
-        glFlush();
-  		 	SDL_GL_SwapWindow(win);
+        draw_relations_and_ways(win, hash_relations, hash_ways, hash_nodes);
       }
 
   }
-  //glDisable(GL_LINE_STIPPLE);
 	glDisable(GL_DEPTH_TEST);
   SDL_GL_DeleteContext(contextOpenGL);
 	SDL_DestroyWindow(win);

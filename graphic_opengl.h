@@ -23,6 +23,7 @@
 #define INNER_DEPTH 0.5
 #define PEDEST_DEPTH 0.2
 #define STEP_WAY_DEPTH 0.75
+#define RAILWAY_DEPTH 0.74
 #define HIGHWAY_DEPTH 0.8
 #define HIGHWAY_DEPTH_SND 0.9
 
@@ -39,21 +40,31 @@
 
 #define SHOW_TEXT 0
 
-//Dessine une ligne avec une couleur , une largeur et une profondeur
+//Dessine une ligne avec une couleur , une largeur et une profondeur à l'aide d'un way
 void draw_line( my_way *way, GHashTable *nodes, GLfloat width, GLdouble depth, GLubyte r, GLubyte g, GLubyte b);
-//Dessine une ligne en pointillé
+
+//Dessine une ligne en pointillé  à l'aide d'un way
 void draw_line_stipple(my_way *way, GHashTable *nodes, GLfloat width, GLdouble depth, GLubyte r, GLubyte g, GLubyte b);
 
+//Déssine un polygone concave  à l'aide d'un way
 void draw_polygon(my_way *way, GHashTable *nodes, GLdouble depth, GLubyte r, GLubyte g, GLubyte b);
 
 //Dessine un way
 void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes);
+
 //parcour une hashtable de way et dessine un way
 void draw_ways(GHashTable *hash_ways, GHashTable *hash_nodes);
 
+//Déssine la fenêtre graphique avec les éléments du fichier osm
 void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTable *hash_relations);
 
+//Déssine les rélations du document osm
 void draw_relations(GHashTable *relations, GHashTable *ways, GHashTable *nodes);
+
+//déssine une rélation
 void draw_one_relation(my_relation *rel, GHashTable *relations, GHashTable *ways, GHashTable *nodes);
+
+//Déssine les rélations et les ways sur une fenêtre
+void draw_relations_and_ways(SDL_Window *win, GHashTable *hash_relations, GHashTable *hash_ways, GHashTable *hash_nodes);
 
 #endif
