@@ -1,6 +1,15 @@
 Projet openstreetmap
-les membres de groupes : 
+les membres de groupes :
 Jules Camille Ziriga
 Leila Nait Hamoud
 Souleymane Diallo
 
+Le logiciel permet de lire un fragment de carte au format XML standard d'OpenStreetMap (.osm)  et  l'affiche àa l'ecran en utilisant des primitives
+portables de dessin.
+
+Mode d'emploi de l'application
+- Tapez la commande ./osm_main nom_fichier.osm (nom du fichier d'extension osm dont vous voulez voir le rendu)
+- Zoom avec la touche "+" du clavier
+- Dezoom avec la touche "-" du clavier
+- Retour à l'affichage initiale de la carte avec la touche "home"
+- Déplacement sur la carte en faisant un clic gauche (maintenez) en déplaçant la souris
