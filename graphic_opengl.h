@@ -5,13 +5,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <SDL.h>
-#include "osm.h"
 #include "osm_structure.h"
 
 #define ZOOM 0.009f
 #define MAX_ZOOM 3.0
 #define MIN_ZOOM 0.25
 
+#define WIDTH 1000
+#define HEIGHT 700
 
 #define WATER_DEPTH 0.1
 #define BULDING_DEPTH 0.3

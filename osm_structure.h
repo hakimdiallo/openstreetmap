@@ -20,12 +20,6 @@ typedef struct my_tag {
 typedef struct my_attributs {
 	char id[20];
 	char visible[10];
-	/*
-		char *user;
-		int uid;
-		char *timestamp;
-		char *version;
-	*/
 } my_attributs;
 
 typedef struct my_node {
@@ -95,6 +89,9 @@ void add_tag_to_relation(my_relation *rel, my_tag *tag);
 //
 void add_relation_to_relation(my_relation *rel, char *idRel);
 
+//flibère une structure my_tag
+void free_my_tag(my_tag *tag);
+
 //détruit la structure my_way
 void free_my_way(my_way *way);
 
@@ -109,4 +106,11 @@ void free_my_nodes(GHashTable *nodes);
 
 //Libère la structure my_bounds
 void free_my_bound(my_bounds *bound);
+
+//Libère la structure de donnée rélation
+void free_my_relation(my_relation *rel);
+
+//Libère l'hashtable des rélations
+void free_my_relations(GHashTable *rel);
+
 #endif

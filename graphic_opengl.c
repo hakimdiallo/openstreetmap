@@ -189,11 +189,10 @@ void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes){
           if(!strcmp(tag_value,"water")){
             draw_polygon(w,nodes,HIGHWAY_DEPTH,180, 208, 209);
             draw_line(w,nodes,CONTOUR_WIDTH,HIGHWAY_DEPTH,175, 175, 175);
-            //polygonRGBA( tab_x, tab_y, g_slist_length(w->nodes), 175, 175, 175, 255);
           }
           else if(!strcmp(tag_value,"coastline")){
             if ( !coast_line) {
-              //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            //  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
               glClearColor(174/255.0,208/255.0,208/255.0,0.0);
               coast_line = 1;
             }
@@ -260,9 +259,9 @@ void draw_way(my_way *w, GHashTable *ways, GHashTable *nodes){
 void draw_way_relation(GSList *list, GHashTable *hash_ways, GHashTable *hash_nodes){
   int i;
   int count = g_slist_length(list);
+  my_way *way = NULL;
   for (i = 0; i < count; i++) {
     char *data = g_slist_nth_data(list, i);
-    my_way *way = (my_way *)malloc(sizeof(my_way));
     way = (my_way *)g_hash_table_lookup(hash_ways,data);
     if ( way == NULL ) {
       //printf("way null...\n");
@@ -272,6 +271,7 @@ void draw_way_relation(GSList *list, GHashTable *hash_ways, GHashTable *hash_nod
 
     way = NULL;
   }
+  free(way);
 }
 
 my_way *set_way_outer(my_relation *rel, GHashTable *hash_ways){
@@ -314,11 +314,10 @@ void draw_one_relation(my_relation *rel, GHashTable *hash_relations, GHashTable 
       if (g_slist_length(rel->relations) > 0) {
         int i;
         int size = g_slist_length(rel->relations);
+        my_relation *re = NULL;//(my_relation *)malloc(sizeof(my_relation));
         for (i = 0; i < size; i++) {
           char *data = g_slist_nth_data (rel->relations, i);
           //printf("rel n: %s\n",data);
-
-          my_relation *re = (my_relation *)malloc(sizeof(my_relation));
           re = (my_relation *)g_hash_table_lookup(hash_relations,data);
           if(re == NULL){
             //printf("relation null...\n");
@@ -345,6 +344,8 @@ void draw_one_relation(my_relation *rel, GHashTable *hash_relations, GHashTable 
     if ( rel->nodes != NULL && g_slist_length(rel->nodes) > 0 ){
       my_way *way = set_way_node(rel,hash_ways,hash_nodes);
       draw_way(way,hash_ways,hash_nodes);
+      //free(way);
+      //g_slist_free(way->nodes);
     }
 }
 

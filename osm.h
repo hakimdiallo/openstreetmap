@@ -23,13 +23,11 @@ typedef void (*fct_parcours_t)(GHashTable *relations, GHashTable *ways, GHashTab
 //parcours en largeur des noeuds fils du noeud <osm>(document osm) et applique une fonction sur chaque noeud
 void parcours_largeur(GHashTable *relations, GHashTable *ways, GHashTable *nodes, my_bounds *bound, xmlNodePtr noeud, fct_parcours_t f);
 
-xmlDocPtr parse_file(char *name); // Parse un document xml et retourne un pointeur sur le document xml
-
 //Stocke un noeud osm dans une hashtable de way (noeud way), de node(noeud node) ou bound (noeud bound)
 void stockageNoeudsOSM(GHashTable *relations, GHashTable *ways, GHashTable *nodes, my_bounds *bound, xmlNodePtr noeud);
 
 //Rempli l'hashtable de way, de nodes et le bound en fonction du document xml entré en paramètre
-void parse_file_v(GHashTable *relations, GHashTable *ways, GHashTable *nodes, my_bounds *bound, char *name);
+void parse_file(GHashTable *relations, GHashTable *ways, GHashTable *nodes, my_bounds *bound, char *name);
 
 //Rempli l'hashtable de ways avec les informations du noeud en paramètre
 void setWayInformation(GHashTable *ways, xmlNodePtr noeud);
@@ -43,7 +41,7 @@ my_tag *getTagInformations(xmlNodePtr node);
 //Rempli la variable bound en fonction du fichier entré en paramètre
 void setBoundInformations(my_bounds *bound, xmlNodePtr noeud);
 
-
+//rempli la structure rélation en fonction du fichier osm
 void setRelationInformations(GHashTable *relations, xmlNodePtr noeud);
 
 #endif
