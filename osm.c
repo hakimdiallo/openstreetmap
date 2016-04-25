@@ -38,19 +38,19 @@ void parse_file(GHashTable *relations, GHashTable *ways, GHashTable *nodes, my_b
   doc = xmlParseFile(name);
   if (doc == NULL) {
       fprintf(stderr, "Document XML invalide\n");
-      return ;
+      exit(-1);
   }
   // Récupération de la racine
   noeud = xmlDocGetRootElement(doc);
   if (noeud == NULL) {
       fprintf(stderr, "Document XML vierge\n");
       xmlFreeDoc(doc);
-      return ;
+      exit(-1);
   }
   if ( noeud -> children == NULL ){
     fprintf(stderr, " Rien a affiché \n");
     xmlFreeDoc(doc);
-    return ;
+    exit(-1);
   }
   //parcour du fichier
   parcours_largeur(relations, ways, nodes, bound, noeud->children, stockageNoeudsOSM);

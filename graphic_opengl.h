@@ -23,6 +23,7 @@
 #define INNER_DEPTH 0.5
 #define PEDEST_DEPTH 0.2
 #define STEP_WAY_DEPTH 0.75
+#define RAILWAY_DEPTH 0.74
 #define HIGHWAY_DEPTH 0.8
 #define HIGHWAY_DEPTH_SND 0.9
 
