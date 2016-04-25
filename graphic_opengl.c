@@ -268,10 +268,8 @@ void draw_way_relation(GSList *list, GHashTable *hash_ways, GHashTable *hash_nod
     }
     else
       draw_way(way,hash_ways,hash_nodes);
-
     way = NULL;
   }
-  free(way);
 }
 
 my_way *set_way_outer(my_relation *rel, GHashTable *hash_ways){
@@ -293,20 +291,6 @@ my_way *set_way_outer(my_relation *rel, GHashTable *hash_ways){
   return way;
 }
 
-my_way *set_way_node(my_relation *rel, GHashTable *hash_ways, GHashTable *hash_nodes){
-  my_way *way = init_my_way();
-  int i;
-  int count = g_slist_length(rel->nodes);
-  for (i = 0; i < count; i++) {
-    char *idnode = g_slist_nth_data(rel->nodes,i);
-    my_node *node = g_hash_table_lookup(hash_nodes,idnode);
-    if( node != NULL )
-      add_node_my_way(way,idnode);
-  }
-  strcpy(way->at.id,"");
-  way->tag = rel->tags;
-  return way;
-}
 
 void draw_one_relation(my_relation *rel, GHashTable *hash_relations, GHashTable *hash_ways, GHashTable *hash_nodes){
   //if ( !(rel->drawn) ) {
@@ -314,16 +298,17 @@ void draw_one_relation(my_relation *rel, GHashTable *hash_relations, GHashTable 
       if (g_slist_length(rel->relations) > 0) {
         int i;
         int size = g_slist_length(rel->relations);
-        my_relation *re = NULL;//(my_relation *)malloc(sizeof(my_relation));
+        //my_relation *re = NULL;//(my_relation *)malloc(sizeof(my_relation));
         for (i = 0; i < size; i++) {
           char *data = g_slist_nth_data (rel->relations, i);
           //printf("rel n: %s\n",data);
-          re = (my_relation *)g_hash_table_lookup(hash_relations,data);
+          my_relation *re = (my_relation *)g_hash_table_lookup(hash_relations,data);
           if(re == NULL){
             //printf("relation null...\n");
           }
           else
             draw_one_relation(re,hash_relations,hash_ways,hash_nodes);
+          //free_my_relation(re);à faire
         }
       }
     }
@@ -341,12 +326,6 @@ void draw_one_relation(my_relation *rel, GHashTable *hash_relations, GHashTable 
     if ( rel->ways != NULL && g_slist_length(rel->ways) > 0 ){
       //draw_way_relation(rel->ways,hash_ways,hash_nodes);
     }
-    if ( rel->nodes != NULL && g_slist_length(rel->nodes) > 0 ){
-      my_way *way = set_way_node(rel,hash_ways,hash_nodes);
-      draw_way(way,hash_ways,hash_nodes);
-      //free(way);
-      //g_slist_free(way->nodes);
-    }
 }
 
 void draw_relations(GHashTable *relations, GHashTable *ways, GHashTable *nodes){
@@ -354,10 +333,8 @@ void draw_relations(GHashTable *relations, GHashTable *ways, GHashTable *nodes){
   gpointer relat5;
   g_hash_table_iter_init(&iter5, relations);
   while(g_hash_table_iter_next(&iter5, NULL, &relat5)){
-    my_relation *rel = (my_relation *)malloc(sizeof(my_relation));
-    rel = (my_relation *)relat5;
-    if ( !strcmp(rel->at.visible,"true")) {
-      draw_one_relation(rel,relations,ways,nodes);
+    if ( !strcmp(((my_relation *)relat5)->at.visible,"true")) {
+      draw_one_relation((my_relation *)relat5,relations,ways,nodes);
     }
   }
   printf("done relations...\n");
@@ -518,7 +495,7 @@ void rendererMap_opengl(GHashTable *hash_ways, GHashTable *hash_nodes, GHashTabl
         glFlush();
   		 	SDL_GL_SwapWindow(win);
       }
-      //LAa touche home poutr revenir à la position initiale
+      //La touche home poutr revenir à la position initiale
       if (state[SDL_SCANCODE_HOME] ) {
         glMatrixMode( GL_MODELVIEW );
         glLoadIdentity();

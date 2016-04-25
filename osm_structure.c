@@ -7,14 +7,14 @@ my_way* init_my_way(){
   my_way *way  = malloc(sizeof(my_way));
   way->nodes = NULL;
   way->tag = NULL;
-  way->tag = g_hash_table_new_full( g_str_hash, g_str_equal, free, free );
+  way->tag = g_hash_table_new( g_str_hash, g_str_equal);
   way->drawn = 0;
   return way;
 }
 
 my_node* init_my_node(){
   my_node *node = malloc(sizeof(my_node));
-  node->tag = g_hash_table_new_full ( g_str_hash, g_str_equal, free, free);
+  node->tag = g_hash_table_new ( g_str_hash, g_str_equal);
   return node;
 }
 
@@ -30,7 +30,7 @@ my_relation* init_my_relation(){
   rel->ways = NULL;
   rel->nodes = NULL;
   rel->relations = NULL;
-  rel->tags = g_hash_table_new_full( g_str_hash, g_str_equal, free, free);
+  rel->tags = g_hash_table_new( g_str_hash, g_str_equal);
   return rel;
 }
 
@@ -121,6 +121,7 @@ void free_my_relation(my_relation *rel){
   g_slist_free(rel->nodes);
   g_slist_free(rel->relations);
   g_hash_table_destroy(rel->tags);
+  free(rel);
 }
 
 void free_my_relations(GHashTable *rel){

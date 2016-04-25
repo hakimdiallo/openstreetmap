@@ -68,7 +68,8 @@ void setWayInformation(GHashTable *ways, xmlNodePtr noeud){
     while( child != NULL){
       if(xmlStrEqual(child->name, BAD_CAST "nd")){
         xmlChar *ref = xmlGetProp(child, BAD_CAST "ref");
-        char *reff = strdup((char *)ref);
+        char *reff = (char *)malloc(20*sizeof(char));
+        strcpy(reff,(char *)ref);
         //(char *)malloc(20*sizeof(char));
         add_node_my_way(way,reff);
         //free(reff);
@@ -109,19 +110,14 @@ void setNodeInformations(GHashTable *nodes, xmlNodePtr noeud, my_bounds *bound){
   free(lon);
   free(id);
   free(visible);
-  //free(n);
 }
 
 my_tag *getTagInformations(xmlNodePtr node){
   my_tag *tag = (my_tag *)malloc(sizeof(my_tag));
   tag->key = NULL;
   tag->value = NULL;
-  char *k = (char *)xmlGetProp(node,(const xmlChar *)"k");
-  char *v = (char *)xmlGetProp(node,(const xmlChar *)"v");
-  tag->key = strdup(k);
-  tag->value = strdup(v);
-  free(k);
-  free(v);
+  tag->key  = (char *)xmlGetProp(node,(const xmlChar *)"k");
+  tag->value = (char *)xmlGetProp(node,(const xmlChar *)"v");
   return tag;
 }
 
@@ -153,8 +149,6 @@ void setRelationInformations(GHashTable *relations, xmlNodePtr noeud){
       xmlChar *member = xmlGetProp(child, BAD_CAST "type");
       xmlChar *role = xmlGetProp(child, BAD_CAST "role");
       ref = xmlGetProp(child, BAD_CAST "ref");
-      //char *reff = (char *)malloc(20*sizeof(char));
-      //strcpy(reff,(char *)ref);
       if( xmlStrEqual(member, BAD_CAST "way") ) {
         add_way_to_relation(rel,(char *)ref,role);
       }
@@ -174,11 +168,11 @@ void setRelationInformations(GHashTable *relations, xmlNodePtr noeud){
     }
     child = child->next;
     free(ref);
+  //  free(rel);
   }
   g_hash_table_insert(relations, &(rel->at.id), rel);
   free(id);
   free(visible);
-  //free(rel);//à faire
 }
 
 //Calcule les coordonnées y sur la fenêtre
